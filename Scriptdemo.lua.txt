@@ -32,6 +32,7 @@ loadstring(game:HttpGet(("https://raw.githubusercontent.com/daucobonhi/Ui-Redz-V
 ------ Tab
      local Tab1o = MakeTab({Name = "Script Farm blox fruits "})
      local Tab2o = MakeTab({Name = "Script ball blade "})
+     local Tab3o = MakeTab({Name = "Script evade "})
      
 ------- BUTTON
     
@@ -55,5 +56,16 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/flazhy/QuantumOnyx/re
   Translator = true; -- true/false
 }
 loadstring(game:HttpGet("https://raw.githubusercontent.com/FFJ1/Roblox-Exploits/main/scripts/autoparry.lua"))()
+  end
+  })
+    
+   AddButton(Tab3o, {
+     Name = "GPHUC",
+    Callback = function()
+	  local Settings = {
+  JoinTeam = "Pirates"; -- Pirates/Marines
+  Translator = true; -- true/false
+}
+loadstring(game:HttpGet("https://raw.githubusercontent.com/htnghi1953-code/GPhuchub/refs/heads/main/GPhucEvade"))()
   end
   })
