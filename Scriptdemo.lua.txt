@@ -120,3 +120,39 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/FFJ1/Roblox-Exploits/
 loadstring(game:HttpGet("https://raw.githubusercontent.com/htnghi1953-code/GPhuchub/refs/heads/main/GPhucEvade"))()
   end
   })
+    
+    AddButton(Tab3o, {
+     Name = "void hub",
+    Callback = function()
+	  local Settings = {
+  JoinTeam = "Pirates"; -- Pirates/Marines
+  Translator = true; -- true/false
+}
+
+loadstring(game:HttpGet('https://raw.githubusercontent.com/RequideSync/V0ID/refs/heads/main/L0L/Evade.lua'))()
+  end
+  })
+    
+    AddButton(Tab3o, {
+     Name = "infinity slide",
+    Callback = function()
+	  local Settings = {
+  JoinTeam = "Pirates"; -- Pirates/Marines
+  Translator = true; -- true/false
+}
+
+loadstring(game:HttpGet("https://raw.githubusercontent.com/catwljz/vitamincc/refs/heads/main/InfinitySlide%20(3).txt"))()
+  end
+  })
+    
+    AddButton(Tab3o, {
+     Name = "script evade",
+    Callback = function()
+	  local Settings = {
+  JoinTeam = "Pirates"; -- Pirates/Marines
+  Translator = true; -- true/false
+}
+
+loadstring(game:HttpGet("https://raw.githubusercontent.com/JScripter-Lua/Mid-Journey_Open-Source/refs/heads/main/Evade%20Lag%20Free%20Test.lua"))()
+  end
+  })
