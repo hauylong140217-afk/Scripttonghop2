@@ -48,6 +48,57 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/flazhy/QuantumOnyx/re
   end
   })
     
+    AddButton(Tab1o, {
+     Name = "hoho hub(get key)",
+    Callback = function()
+	  local Settings = {
+  JoinTeam = "Pirates"; -- Pirates/Marines
+  Translator = true; -- true/false
+}
+
+loadstring(game:HttpGet("https://raw.githubusercontent.com/acsu123/HOHO_H/main/Loading_UI"))()
+  end
+  })
+    
+    AddButton(Tab1o, {
+     Name = "hnc hub",
+    Callback = function()
+	  local Settings = {
+  JoinTeam = "Pirates"; -- Pirates/Marines
+  Translator = true; -- true/false
+}
+
+getgenv().team = "Pirates" --"Marines"
+loadstring(game:HttpGet("https://raw.githubusercontent.com/hnc-roblox/HNCHubOnTop/refs/heads/main/HNC_Roblox.lua"))()
+  end
+  })
+    
+    AddButton(Tab1o, {
+     Name = "min",
+    Callback = function()
+	  local Settings = {
+  JoinTeam = "Pirates"; -- Pirates/Marines
+  Translator = true; -- true/false
+}
+
+getgenv().Team = "Marines"
+loadstring(game:HttpGet("https://github.com/LuaCrack/Min/raw/refs/heads/main/MinVnV5"))()
+  end
+  })
+    
+    AddButton(Tab1o, {
+     Name = "xeter",
+    Callback = function()
+	  local Settings = {
+  JoinTeam = "Pirates"; -- Pirates/Marines
+  Translator = true; -- true/false
+}
+
+getgenv().Team = "Marines"
+loadstring(game:HttpGet("https://raw.githubusercontent.com/TlDinhKhoi/Xeter/refs/heads/main/Main.lua"))()
+  end
+  })
+    
    AddButton(Tab2o, {
      Name = "ffj",
     Callback = function()
