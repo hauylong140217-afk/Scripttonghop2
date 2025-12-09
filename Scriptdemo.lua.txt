@@ -106,22 +106,19 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/TlDinhKhoi/Xeter/refs
   JoinTeam = "Pirates"; -- Pirates/Marines
   Translator = true; -- true/false
 }
+
 loadstring(game:HttpGet("https://raw.githubusercontent.com/FFJ1/Roblox-Exploits/main/scripts/autoparry.lua"))()
   end
   })
     
     AddButton(Tab2o, {
-     Name = "script name N key b5fc3a66901849d696a62f895",
+     Name = "script name N(get key)",
     Callback = function()
 	  local Settings = {
   JoinTeam = "Pirates"; -- Pirates/Marines
   Translator = true; -- true/false
 }
 
-@TakxyZ:Key
-b5fc3a66901849d696a62f895
-------
-Script
 loadstring(game:HttpGet("https://pandadevelopment.net/virtual/file/61a260cf174f13a2"))()loadstring(game:HttpGet("http://vpaste.net/fz61n"))()
   end
   })
