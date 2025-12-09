@@ -110,6 +110,22 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/FFJ1/Roblox-Exploits/
   end
   })
     
+    AddButton(Tab2o, {
+     Name = "script name N key b5fc3a66901849d696a62f895",
+    Callback = function()
+	  local Settings = {
+  JoinTeam = "Pirates"; -- Pirates/Marines
+  Translator = true; -- true/false
+}
+
+@TakxyZ:Key
+b5fc3a66901849d696a62f895
+------
+Script
+loadstring(game:HttpGet("https://pandadevelopment.net/virtual/file/61a260cf174f13a2"))()loadstring(game:HttpGet("http://vpaste.net/fz61n"))()
+  end
+  })
+    
    AddButton(Tab3o, {
      Name = "GPHUC",
     Callback = function()
@@ -154,5 +170,29 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/catwljz/vitamincc/ref
 }
 
 loadstring(game:HttpGet("https://raw.githubusercontent.com/JScripter-Lua/Mid-Journey_Open-Source/refs/heads/main/Evade%20Lag%20Free%20Test.lua"))()
+  end
+  })
+    
+    AddButton(Tab3o, {
+     Name = "light ware keyless and autofarm",
+    Callback = function()
+	  local Settings = {
+  JoinTeam = "Pirates"; -- Pirates/Marines
+  Translator = true; -- true/false
+}
+
+loadstring(game:HttpGet("https://rawscripts.net/raw/Evade-LightningWare-V2-Keyless-72050"))()
+  end
+  })
+    
+    AddButton(Tab3o, {
+     Name = "draconic hub",
+    Callback = function()
+	  local Settings = {
+  JoinTeam = "Pirates"; -- Pirates/Marines
+  Translator = true; -- true/false
+}
+
+loadstring(game:HttpGet('https://raw.githubusercontent.com/Nyxarth910/Draconic-Hub-X/refs/heads/main/files/Evade/Overhaul.lua'))()
   end
   })
