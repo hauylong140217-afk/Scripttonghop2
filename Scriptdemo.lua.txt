@@ -33,6 +33,7 @@ loadstring(game:HttpGet(("https://raw.githubusercontent.com/daucobonhi/Ui-Redz-V
      local Tab1o = MakeTab({Name = "Script Farm blox fruits "})
      local Tab2o = MakeTab({Name = "Script ball blade "})
      local Tab3o = MakeTab({Name = "Script evade "})
+     local Tab3o = MakeTab({Name = "Script basically fnf: remix "})
      
 ------- BUTTON
     
@@ -191,5 +192,17 @@ loadstring(game:HttpGet("https://rawscripts.net/raw/Evade-LightningWare-V2-Keyle
 }
 
 loadstring(game:HttpGet('https://raw.githubusercontent.com/Nyxarth910/Draconic-Hub-X/refs/heads/main/files/Evade/Overhaul.lua'))()
+  end
+  })
+    
+    AddButton(Tab4o, {
+     Name = "fnf auto",
+    Callback = function()
+	  local Settings = {
+  JoinTeam = "Pirates"; -- Pirates/Marines
+  Translator = true; -- true/false
+}
+
+loadstring(game:HttpGet("https://rawscripts.net/raw/Basically-FNF:-Remix-fnf-21934"))()
   end
   })
