@@ -194,6 +194,18 @@ loadstring(game:HttpGet("https://rawscripts.net/raw/Evade-LightningWare-V2-Keyle
 loadstring(game:HttpGet('https://raw.githubusercontent.com/Nyxarth910/Draconic-Hub-X/refs/heads/main/files/Evade/Overhaul.lua'))()
   end
   })
+
+    AddButton(Tab3o, {
+     Name = "whakizashi hub",
+    Callback = function()
+	  local Settings = {
+  JoinTeam = "Pirates"; -- Pirates/Marines
+  Translator = true; -- true/false
+}
+
+loadstring(game:HttpGet("https://raw.githubusercontent.com/sccv8/WhakizashiX/refs/heads/main/old%20whakizashi.txt"))()
+  end
+  })
     
     AddButton(Tab4o, {
      Name = "fnf auto",
