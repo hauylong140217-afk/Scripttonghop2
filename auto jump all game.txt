@@ -1,0 +1,54 @@
+local Player = game.Players.LocalPlayer
+local RunService = game:GetService("RunService")
+
+local jumping = false
+
+local ScreenGui = Instance.new("ScreenGui", game.CoreGui)
+ScreenGui.Name = "kencute24_AutoJump"
+
+local Frame = Instance.new("Frame", ScreenGui)
+Frame.Size = UDim2.new(0, 200, 0, 110)
+Frame.Position = UDim2.new(0.5, -100, 0.7, 0)
+Frame.BackgroundColor3 = Color3.fromRGB(25,25,25)
+Frame.Active = true
+Frame.Draggable = true
+
+local UICorner = Instance.new("UICorner", Frame)
+UICorner.CornerRadius = UDim.new(0, 18)
+
+local Title = Instance.new("TextLabel", Frame)
+Title.Size = UDim2.new(1, 0, 0, 35)
+Title.BackgroundTransparency = 1
+Title.Text = "Kencute24"
+Title.Font = Enum.Font.GothamBold
+Title.TextSize = 18
+Title.TextColor3 = Color3.fromRGB(255,255,255)
+
+local Button = Instance.new("TextButton", Frame)
+Button.Size = UDim2.new(1, -30, 0, 45)
+Button.Position = UDim2.new(0, 15, 0, 50)
+Button.Text = "AUTO JUMP : OFF"
+Button.Font = Enum.Font.GothamBold
+Button.TextSize = 15
+Button.TextColor3 = Color3.new(1,1,1)
+Button.BackgroundColor3 = Color3.fromRGB(55,55,55)
+
+local UICorner2 = Instance.new("UICorner", Button)
+UICorner2.CornerRadius = UDim.new(0, 16)
+
+RunService.RenderStepped:Connect(function()
+	if jumping then
+		local char = Player.Character
+		if char and char:FindFirstChild("Humanoid") then
+			local hum = char.Humanoid
+			if hum.FloorMaterial ~= Enum.Material.Air then
+				hum:ChangeState(Enum.HumanoidStateType.Jumping)
+			end
+		end
+	end
+end)
+
+Button.MouseButton1Click:Connect(function()
+	jumping = not jumping
+	Button.Text = jumping and "AUTO JUMP : ON" or "AUTO JUMP : OFF"
+end)
