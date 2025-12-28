@@ -207,6 +207,30 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/sccv8/WhakizashiX/ref
   end
   })
     
+    AddButton(Tab3o, {
+     Name = "kencute24 auto farm candy",
+    Callback = function()
+	  local Settings = {
+  JoinTeam = "Pirates"; -- Pirates/Marines
+  Translator = true; -- true/false
+}
+
+loadstring(game:HttpGet("https://raw.githubusercontent.com/hauylong140217-afk/Scripttonghop2/refs/heads/main/auto%20farm%20candy%20evade.txt"))()
+  end
+  })
+    
+    AddButton(Tab3o, {
+     Name = "Kencute24 auto jump",
+    Callback = function()
+	  local Settings = {
+  JoinTeam = "Pirates"; -- Pirates/Marines
+  Translator = true; -- true/false
+}
+
+loadstring(game:HttpGet("https://raw.githubusercontent.com/hauylong140217-afk/Scripttonghop2/refs/heads/main/auto%20jump%20all%20game.txt"))()
+  end
+  })
+    
     AddButton(Tab4o, {
      Name = "fnf auto",
     Callback = function()
