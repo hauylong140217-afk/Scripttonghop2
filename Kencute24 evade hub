@@ -1,4 +1,5 @@
--- AUTO FARM CANDY EVADE (FIXED)
+-- AUTO FARM CANDY EVADE (GITHUB READY)
+-- Delay: 1.20
 -- Paste & Execute
 
 local Players = game:GetService("Players")
@@ -9,16 +10,12 @@ repeat task.wait() until lp.Character
 local char = lp.Character
 local hrp = char:WaitForChild("HumanoidRootPart")
 
-------------------------------------------------
--- SETTING
-------------------------------------------------
+-- SETTINGS
 local FARM_HEIGHT = 80
 local DELAY = 1.20
 local farming = true
 
-------------------------------------------------
--- FLY SAFE
-------------------------------------------------
+-- KEEP PLAYER IN AIR (SAFE)
 RunService.RenderStepped:Connect(function()
     if farming and hrp then
         hrp.Velocity = Vector3.zero
@@ -30,15 +27,13 @@ RunService.RenderStepped:Connect(function()
     end
 end)
 
-------------------------------------------------
--- FIND CANDY
-------------------------------------------------
+-- AUTO FARM CANDY
 task.spawn(function()
     while farming do
         for _,v in ipairs(workspace:GetDescendants()) do
             if v:IsA("BasePart") then
-                local n = v.Name:lower()
-                if n:find("candy") or n:find("sweet") then
+                local name = v.Name:lower()
+                if name:find("candy") or name:find("sweet") then
                     pcall(function()
                         hrp.CFrame = v.CFrame + Vector3.new(0, 2, 0)
                         task.wait(DELAY)
