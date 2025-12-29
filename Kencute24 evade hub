@@ -1,46 +1,146 @@
--- AUTO FARM CANDY EVADE (GITHUB READY)
--- Delay: 1.20
--- Paste & Execute
+--[[ 
+    kencute24 Hub | EVADE MAX LEVEL
+    Author: kencute24
+    Type: Educational / Demo
+]]
 
+-- SERVICES
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
+local Workspace = game:GetService("Workspace")
 
-local lp = Players.LocalPlayer
-repeat task.wait() until lp.Character
-local char = lp.Character
-local hrp = char:WaitForChild("HumanoidRootPart")
+-- PLAYER
+local LP = Players.LocalPlayer
+local Char = LP.Character or LP.CharacterAdded:Wait()
+local HRP = Char:WaitForChild("HumanoidRootPart")
+local Hum = Char:WaitForChild("Humanoid")
 
--- SETTINGS
-local FARM_HEIGHT = 80
-local DELAY = 1.20
-local farming = true
+-- RELOAD SAFE
+LP.CharacterAdded:Connect(function(c)
+    Char = c
+    HRP = c:WaitForChild("HumanoidRootPart")
+    Hum = c:WaitForChild("Humanoid")
+end)
 
--- KEEP PLAYER IN AIR (SAFE)
-RunService.RenderStepped:Connect(function()
-    if farming and hrp then
-        hrp.Velocity = Vector3.zero
-        hrp.CFrame = CFrame.new(
-            hrp.Position.X,
-            FARM_HEIGHT,
-            hrp.Position.Z
-        )
+-- ================= GUI =================
+local gui = Instance.new("ScreenGui")
+gui.Name = "kencute24Hub"
+gui.Parent = game.CoreGui
+
+local main = Instance.new("Frame", gui)
+main.Size = UDim2.new(0,320,0,360)
+main.Position = UDim2.new(0.05,0,0.25,0)
+main.BackgroundColor3 = Color3.fromRGB(15,15,15)
+main.Active = true
+main.Draggable = true
+main.BorderSizePixel = 0
+
+local title = Instance.new("TextLabel", main)
+title.Size = UDim2.new(1,0,0,45)
+title.Text = "🔥 kencute24 Hub | EVADE"
+title.Font = Enum.Font.GothamBold
+title.TextSize = 18
+title.TextColor3 = Color3.new(1,1,1)
+title.BackgroundTransparency = 1
+
+local function btn(text, y)
+    local b = Instance.new("TextButton", main)
+    b.Size = UDim2.new(0.9,0,0,42)
+    b.Position = UDim2.new(0.05,0,y,0)
+    b.Text = text
+    b.Font = Enum.Font.Gotham
+    b.TextSize = 14
+    b.TextColor3 = Color3.new(1,1,1)
+    b.BackgroundColor3 = Color3.fromRGB(35,35,35)
+    b.BorderSizePixel = 0
+    return b
+end
+
+local bAutoWin  = btn("AUTO WIN", 0.18)
+local bFarm     = btn("AUTO FARM CANDY", 0.33)
+local bAnti     = btn("ANTI NEXTBOT", 0.48)
+local bSpeed    = btn("SPEED BOOST", 0.63)
+local bJump     = btn("JUMP BOOST", 0.78)
+
+-- ================= STATES =================
+local AutoWin = false
+local AutoFarm = false
+local AntiBot = false
+local Speed = false
+local Jump = false
+
+-- ================= AUTO WIN =================
+bAutoWin.MouseButton1Click:Connect(function()
+    AutoWin = not AutoWin
+    bAutoWin.Text = AutoWin and "AUTO WIN: ON" or "AUTO WIN"
+
+    task.spawn(function()
+        while AutoWin do
+            if HRP then
+                HRP.Velocity = Vector3.new(0,120,0)
+            end
+            task.wait(0.4)
+        end
+    end)
+end)
+
+-- ================= AUTO FARM CANDY =================
+bFarm.MouseButton1Click:Connect(function()
+    AutoFarm = not AutoFarm
+    bFarm.Text = AutoFarm and "AUTO FARM: ON" or "AUTO FARM CANDY"
+
+    task.spawn(function()
+        while AutoFarm do
+            local closest, dist = nil, math.huge
+
+            for _,v in ipairs(Workspace:GetDescendants()) do
+                if v:IsA("BasePart") and v.Name:lower():find("candy") then
+                    local d = (HRP.Position - v.Position).Magnitude
+                    if d < dist then
+                        dist = d
+                        closest = v
+                    end
+                end
+            end
+
+            if closest then
+                HRP.CFrame = closest.CFrame + Vector3.new(0,2,0)
+            end
+
+            task.wait(1.20) -- delay an toàn
+        end
+    end)
+end)
+
+-- ================= ANTI NEXTBOT =================
+bAnti.MouseButton1Click:Connect(function()
+    AntiBot = not AntiBot
+    bAnti.Text = AntiBot and "ANTI NEXTBOT: ON" or "ANTI NEXTBOT"
+end)
+
+RunService.Heartbeat:Connect(function()
+    if not AntiBot or not HRP then return end
+
+    for _,m in ipairs(Workspace:GetChildren()) do
+        if m:IsA("Model") and m.Name:lower():find("bot") and m:FindFirstChild("HumanoidRootPart") then
+            local d = (HRP.Position - m.HumanoidRootPart.Position).Magnitude
+            if d < 30 then
+                HRP.CFrame = HRP.CFrame * CFrame.new(0,0,35)
+            end
+        end
     end
 end)
 
--- AUTO FARM CANDY
-task.spawn(function()
-    while farming do
-        for _,v in ipairs(workspace:GetDescendants()) do
-            if v:IsA("BasePart") then
-                local name = v.Name:lower()
-                if name:find("candy") or name:find("sweet") then
-                    pcall(function()
-                        hrp.CFrame = v.CFrame + Vector3.new(0, 2, 0)
-                        task.wait(DELAY)
-                    end)
-                end
-            end
-        end
-        task.wait(0.2)
-    end
+-- ================= SPEED =================
+bSpeed.MouseButton1Click:Connect(function()
+    Speed = not Speed
+    Hum.WalkSpeed = Speed and 34 or 16
+    bSpeed.Text = Speed and "SPEED: ON" or "SPEED BOOST"
+end)
+
+-- ================= JUMP =================
+bJump.MouseButton1Click:Connect(function()
+    Jump = not Jump
+    Hum.JumpPower = Jump and 90 or 50
+    bJump.Text = Jump and "JUMP: ON" or "JUMP BOOST"
 end)
