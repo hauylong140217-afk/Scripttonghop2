@@ -129,7 +129,6 @@ Main:CreateToggle({
 Auto:CreateToggle({Name="Auto Win", Flag="AutoWin", Callback=function(v) AutoWin=v end})
 Auto:CreateToggle({Name="Auto Farm Candy", Flag="AutoCandy", Callback=function(v) AutoCandy=v end})
 Auto:CreateToggle({Name="Smart Evade", Flag="SmartEvade", Callback=function(v) SmartEvade=v end})
-Auto:CreateToggle({Name="Auto Respawn", Flag="AutoRespawn", Callback=function(v) AutoRespawn=v end})
 Auto:CreateToggle({Name="Auto Rejoin", Flag="AutoRejoin", Callback=function(v) AutoRejoin=v end})
 
 --------------------------------------------------
