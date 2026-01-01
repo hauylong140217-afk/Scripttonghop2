@@ -1,0 +1,84 @@
+local Rayfield = loadstring(game:HttpGet("https://sirius.menu/rayfield"))()
+
+local Window = Rayfield:CreateWindow({
+
+	Name = "kencute24",	LoadingTitle = "kencute24",
+
+	LoadingSubtitle = "",
+
+	ConfigurationSaving = {
+
+		Enabled = false,
+
+		FolderName = nil,
+
+		FileName = "ken.cute24"
+
+	},
+
+	KeySystem = false
+
+})
+
+local Tab = Window:CreateTab("main", 4483362458)
+local Tab = Window:CreateTab("auto", 4483362458)
+
+Tab1:CreateButton({
+
+	Name = "Ngăn NPC",
+
+	Callback = function()
+
+		loadstring(game:HttpGet("https://pastefy.app/jEBGsWZD/raw", true))()
+
+	end
+
+})
+
+Tab1:CreateButton({
+
+	Name = "Lưu & Tele",
+
+	Callback = function()
+
+		loadstring(game:HttpGet("https://pastefy.app/ePpQr8Pd/raw", true))()
+
+	end
+
+})
+
+Tab1:CreateButton({
+
+	Name = "Phúc Executor",
+
+	Callback = function()
+
+		loadstring(game:HttpGet("https://pastefy.app/PXQAkvNx/raw", true))()
+
+	end
+
+})
+
+Tab1:CreateButton({
+
+	Name = "Hitbox",
+
+	Callback = function()
+
+		loadstring(game:HttpGet("https://pastefy.app/TKjCwJxY/raw"))()
+
+	end
+
+})
+
+Tab1:CreateButton({
+
+	Name = "TP Tool",
+
+	Callback = function()
+
+		loadstring(game:HttpGet("https://pastefy.app/b4HJi3Z3/raw"))()
+
+	end
+
+})
