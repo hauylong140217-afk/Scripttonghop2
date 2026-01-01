@@ -1,11 +1,4 @@
---// kencute24 Hub | Evade | FINAL COMPLETE (HIDDEN KEY)
---// Script by ken.cute24
-
--- Hide key
-local function _k()
-	return string.char(75,101,110,99,117,116,101,50,52,100,101,112,116,114,97,105)
-end
-
+--// Rayfield UI
 local Rayfield = loadstring(game:HttpGet("https://sirius.menu/rayfield"))()
 
 local Window = Rayfield:CreateWindow({
@@ -17,22 +10,14 @@ local Window = Rayfield:CreateWindow({
 		FolderName = "kencute24Hub",
 		FileName = "EvadeFinal"
 	},
-	KeySystem = true,
-	KeySettings = {
-		Title = "kencute24 Hub",
-		Subtitle = "Enter Key",
-		Note = "Get key from Discord / TikTok",
-		FileName = "kencute24Key",
-		SaveKey = true,
-		Key = { _k() }
-	}
+	KeySystem = false
 })
 
--- Tabs
-local Main  = Window:CreateTab("Main", 4483362458)
-local Auto  = Window:CreateTab("Auto", 4483362458)
+-- Tabs (About ở CUỐI)
+local Main = Window:CreateTab("Main", 4483362458)
+local Auto = Window:CreateTab("Auto", 4483362458)
+local Misc = Window:CreateTab("Misc", 4483362458)
 local About = Window:CreateTab("About", 4483362458)
-local Misc  = Window:CreateTab("Misc", 4483362458)
 
 -- Services
 local Players = game:GetService("Players")
@@ -212,7 +197,16 @@ LocalPlayer.OnTeleport:Connect(function(state)
 end)
 
 --------------------------------------------------
--- ABOUT
+-- MISC
+--------------------------------------------------
+
+Misc:CreateButton({
+	Name = "Destroy GUI",
+	Callback = function() Rayfield:Destroy() end
+})
+
+--------------------------------------------------
+-- ABOUT (TAB CUỐI)
 --------------------------------------------------
 
 About:CreateParagraph({
@@ -240,19 +234,8 @@ About:CreateButton({
 	end
 })
 
---------------------------------------------------
--- MISC
---------------------------------------------------
-
-Misc:CreateButton({
-	Name = "Destroy GUI",
-	Callback = function()
-		Rayfield:Destroy()
-	end
-})
-
 Rayfield:Notify({
 	Title = "kencute24 Hub",
-	Content = "FINAL VERSION LOADED",
-	Duration = 5
+	Content = "ABOUT TAB MOVED TO LAST",
+	Duration = 4
 })
