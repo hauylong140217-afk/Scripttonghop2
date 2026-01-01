@@ -1,84 +1,158 @@
+--// Rayfield UI
 local Rayfield = loadstring(game:HttpGet("https://sirius.menu/rayfield"))()
 
 local Window = Rayfield:CreateWindow({
-
-	Name = "kencute24",	LoadingTitle = "kencute24",
-
-	LoadingSubtitle = "",
-
+	Name = "kencute24 Hub | Evade",
+	LoadingTitle = "kencute24 Hub",
+	LoadingSubtitle = "Evade Full Script",
 	ConfigurationSaving = {
-
-		Enabled = false,
-
-		FolderName = nil,
-
-		FileName = "ken.cute24"
-
+		Enabled = false
 	},
-
 	KeySystem = false
-
 })
 
-local Tab1 = Window:CreateTab("main", 4483362458)
-local Tab2 = Window:CreateTab("auto", 4483362458)
+--// Tabs
+local MainTab = Window:CreateTab("Main", 4483362458)
+local AutoTab = Window:CreateTab("Auto", 4483362458)
+local MiscTab = Window:CreateTab("Misc", 4483362458)
 
-Tab1:CreateButton({
+--// Services
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local LocalPlayer = Players.LocalPlayer
 
-	Name = "Ngăn NPC",
+--// Vars
+local AutoWin = false
+local AutoCandy = false
+local NoNPC = false
 
-	Callback = function()
+--------------------------------------------------
+-- MAIN
+--------------------------------------------------
 
-		loadstring(game:HttpGet("https://pastefy.app/jEBGsWZD/raw", true))()
-
+MainTab:CreateToggle({
+	Name = "Ngăn NPC (Anti Nextbot)",
+	CurrentValue = false,
+	Callback = function(Value)
+		NoNPC = Value
+		if Value then
+			for _,v in pairs(workspace:GetDescendants()) do
+				if v:IsA("Model") and v.Name:lower():find("bot") then
+					pcall(function()
+						v:Destroy()
+					end)
+				end
+			end
+		end
 	end
-
 })
 
-Tab1:CreateButton({
-
-	Name = "Lưu & Tele",
-
+MainTab:CreateButton({
+	Name = "Hitbox NPC (An toàn)",
 	Callback = function()
-
-		loadstring(game:HttpGet("https://pastefy.app/ePpQr8Pd/raw", true))()
-
+		for _,v in pairs(workspace:GetDescendants()) do
+			if v:IsA("BasePart") and v.Name:lower():find("hit") then
+				v.Size = Vector3.new(1,1,1)
+				v.Transparency = 0.7
+				v.CanCollide = false
+			end
+		end
 	end
-
 })
 
-Tab1:CreateButton({
-
-	Name = "Phúc Executor",
-
-	Callback = function()
-
-		loadstring(game:HttpGet("https://pastefy.app/PXQAkvNx/raw", true))()
-
-	end
-
-})
-
-Tab1:CreateButton({
-
-	Name = "Hitbox",
-
-	Callback = function()
-
-		loadstring(game:HttpGet("https://pastefy.app/TKjCwJxY/raw"))()
-
-	end
-
-})
-
-Tab1:CreateButton({
-
+MainTab:CreateButton({
 	Name = "TP Tool",
-
 	Callback = function()
+		local Tool = Instance.new("Tool")
+		Tool.Name = "TP Tool"
+		Tool.RequiresHandle = false
+		Tool.Parent = LocalPlayer.Backpack
 
-		loadstring(game:HttpGet("https://pastefy.app/b4HJi3Z3/raw"))()
-
+		Tool.Activated:Connect(function()
+			local mouse = LocalPlayer:GetMouse()
+			if mouse.Hit then
+				LocalPlayer.Character:PivotTo(mouse.Hit)
+			end
+		end)
 	end
+})
 
+--------------------------------------------------
+-- AUTO
+--------------------------------------------------
+
+AutoTab:CreateToggle({
+	Name = "Auto Win (Bay lên trời)",
+	CurrentValue = false,
+	Callback = function(Value)
+		AutoWin = Value
+	end
+})
+
+AutoTab:CreateToggle({
+	Name = "Auto Farm Candy",
+	CurrentValue = false,
+	Callback = function(Value)
+		AutoCandy = Value
+	end
+})
+
+RunService.Heartbeat:Connect(function()
+	pcall(function()
+		if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
+			local hrp = LocalPlayer.Character.HumanoidRootPart
+
+			-- Auto Win
+			if AutoWin then
+				hrp.Velocity = Vector3.new(0, 120, 0)
+				hrp.CFrame = hrp.CFrame + Vector3.new(0, 5, 0)
+			end
+
+			-- Auto Candy
+			if AutoCandy then
+				for _,candy in pairs(workspace:GetDescendants()) do
+					if candy.Name:lower():find("candy") and candy:IsA("BasePart") then
+						hrp.CFrame = candy.CFrame
+						task.wait(0.15)
+					end
+				end
+			end
+		end
+	end)
+end)
+
+--------------------------------------------------
+-- MISC
+--------------------------------------------------
+
+MiscTab:CreateButton({
+	Name = "Anti AFK",
+	Callback = function()
+		local vu = game:GetService("VirtualUser")
+		Players.LocalPlayer.Idled:Connect(function()
+			vu:Button2Down(Vector2.new(0,0),workspace.CurrentCamera.CFrame)
+			task.wait(1)
+			vu:Button2Up(Vector2.new(0,0),workspace.CurrentCamera.CFrame)
+		end)
+	end
+})
+
+MiscTab:CreateButton({
+	Name = "Reset Character",
+	Callback = function()
+		LocalPlayer.Character:BreakJoints()
+	end
+})
+
+MiscTab:CreateButton({
+	Name = "Destroy GUI",
+	Callback = function()
+		Rayfield:Destroy()
+	end
+})
+
+Rayfield:Notify({
+	Title = "kencute24 Hub",
+	Content = "Script Evade đã load thành công!",
+	Duration = 5
 })
