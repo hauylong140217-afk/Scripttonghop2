@@ -4,76 +4,116 @@ local Rayfield = loadstring(game:HttpGet("https://sirius.menu/rayfield"))()
 local Window = Rayfield:CreateWindow({
 	Name = "kencute24 Hub | Evade",
 	LoadingTitle = "kencute24 Hub",
-	LoadingSubtitle = "Evade Full Script",
-	ConfigurationSaving = {
-		Enabled = false
-	},
+	LoadingSubtitle = "FULL ALL FEATURES",
+	ConfigurationSaving = {Enabled = false},
 	KeySystem = false
 })
 
---// Tabs
-local MainTab = Window:CreateTab("Main", 4483362458)
-local AutoTab = Window:CreateTab("Auto", 4483362458)
-local MiscTab = Window:CreateTab("Misc", 4483362458)
+-- Tabs
+local Main = Window:CreateTab("Main", 4483362458)
+local Auto = Window:CreateTab("Auto", 4483362458)
+local Misc = Window:CreateTab("Misc", 4483362458)
 
---// Services
+-- Services
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
+local UIS = game:GetService("UserInputService")
 local LocalPlayer = Players.LocalPlayer
+local Camera = workspace.CurrentCamera
 
---// Vars
-local AutoWin = false
-local AutoCandy = false
-local NoNPC = false
+-- Vars
+local ESPOn, AutoWin, AutoCandy, SmartEvade = false, false, false, false
+local DashCD = false
+local ESPObjs = {}
+
+-- Utils
+local function Char()
+	return LocalPlayer.Character
+end
+local function HRP()
+	return Char() and Char():FindFirstChild("HumanoidRootPart")
+end
+local function Hum()
+	return Char() and Char():FindFirstChildOfClass("Humanoid")
+end
 
 --------------------------------------------------
 -- MAIN
 --------------------------------------------------
 
-MainTab:CreateToggle({
-	Name = "Ngăn NPC (Anti Nextbot)",
+Main:CreateSlider({
+	Name = "Walk Speed",
+	Range = {16, 120},
+	Increment = 1,
+	CurrentValue = 16,
+	Callback = function(v)
+		pcall(function() Hum().WalkSpeed = v end)
+	end
+})
+
+Main:CreateSlider({
+	Name = "Jump Power",
+	Range = {50, 220},
+	Increment = 5,
+	CurrentValue = 50,
+	Callback = function(v)
+		pcall(function() Hum().JumpPower = v end)
+	end
+})
+
+-- Fake Emote (an toàn hơn)
+Main:CreateToggle({
+	Name = "Fake Emote / Fake Dead (Safe)",
 	CurrentValue = false,
-	Callback = function(Value)
-		NoNPC = Value
-		if Value then
-			for _,v in pairs(workspace:GetDescendants()) do
-				if v:IsA("Model") and v.Name:lower():find("bot") then
-					pcall(function()
-						v:Destroy()
-					end)
+	Callback = function(v)
+		pcall(function()
+			local h = Hum()
+			if v then
+				h:ChangeState(Enum.HumanoidStateType.Physics)
+				h:SetStateEnabled(Enum.HumanoidStateType.FallingDown,false)
+			else
+				h:ChangeState(Enum.HumanoidStateType.GettingUp)
+			end
+		end)
+	end
+})
+
+-- ESP (Player xanh / Nextbot đỏ)
+local function ClearESP()
+	for _,o in pairs(ESPObjs) do pcall(function() o:Destroy() end) end
+	ESPObjs = {}
+end
+
+local function AddESP(model, color)
+	if not model:FindFirstChild("HumanoidRootPart") then return end
+	local a = Instance.new("BoxHandleAdornment")
+	a.Adornee = model.HumanoidRootPart
+	a.Size = Vector3.new(4,6,4)
+	a.AlwaysOnTop = true
+	a.Transparency = 0.5
+	a.ZIndex = 5
+	a.Color3 = color
+	a.Parent = model
+	table.insert(ESPObjs, a)
+end
+
+Main:CreateToggle({
+	Name = "ESP Player / Nextbot",
+	CurrentValue = false,
+	Callback = function(v)
+		ESPOn = v
+		ClearESP()
+		if v then
+			for _,m in pairs(workspace:GetDescendants()) do
+				if m:IsA("Model") and m:FindFirstChild("HumanoidRootPart") then
+					if Players:GetPlayerFromCharacter(m) then
+						AddESP(m, Color3.fromRGB(0,255,0))
+					elseif m.Name:lower():find("bot") then
+						AddESP(m, Color3.fromRGB(255,0,0))
+					end
 				end
 			end
 		end
-	end
-})
-
-MainTab:CreateButton({
-	Name = "Hitbox NPC (An toàn)",
-	Callback = function()
-		for _,v in pairs(workspace:GetDescendants()) do
-			if v:IsA("BasePart") and v.Name:lower():find("hit") then
-				v.Size = Vector3.new(1,1,1)
-				v.Transparency = 0.7
-				v.CanCollide = false
-			end
-		end
-	end
-})
-
-MainTab:CreateButton({
-	Name = "TP Tool",
-	Callback = function()
-		local Tool = Instance.new("Tool")
-		Tool.Name = "TP Tool"
-		Tool.RequiresHandle = false
-		Tool.Parent = LocalPlayer.Backpack
-
-		Tool.Activated:Connect(function()
-			local mouse = LocalPlayer:GetMouse()
-			if mouse.Hit then
-				LocalPlayer.Character:PivotTo(mouse.Hit)
-			end
-		end)
 	end
 })
 
@@ -81,39 +121,58 @@ MainTab:CreateButton({
 -- AUTO
 --------------------------------------------------
 
-AutoTab:CreateToggle({
+Auto:CreateToggle({
 	Name = "Auto Win (Bay lên trời)",
 	CurrentValue = false,
-	Callback = function(Value)
-		AutoWin = Value
-	end
+	Callback = function(v) AutoWin = v end
 })
 
-AutoTab:CreateToggle({
+Auto:CreateToggle({
 	Name = "Auto Farm Candy",
 	CurrentValue = false,
-	Callback = function(Value)
-		AutoCandy = Value
-	end
+	Callback = function(v) AutoCandy = v end
 })
+
+Auto:CreateToggle({
+	Name = "Smart Evade (né bot)",
+	CurrentValue = false,
+	Callback = function(v) SmartEvade = v end
+})
+
+-- Dash / Slide (Q = Dash, C = Slide)
+UIS.InputBegan:Connect(function(i,g)
+	if g then return end
+	if i.KeyCode == Enum.KeyCode.Q and not DashCD and HRP() then
+		DashCD = true
+		HRP().Velocity = Camera.CFrame.LookVector * 90
+		task.delay(0.6,function() DashCD=false end)
+	end
+	if i.KeyCode == Enum.KeyCode.C and HRP() then
+		HRP().Velocity = Camera.CFrame.LookVector * 60
+	end
+end)
 
 RunService.Heartbeat:Connect(function()
 	pcall(function()
-		if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
-			local hrp = LocalPlayer.Character.HumanoidRootPart
-
-			-- Auto Win
+		if HRP() then
 			if AutoWin then
-				hrp.Velocity = Vector3.new(0, 120, 0)
-				hrp.CFrame = hrp.CFrame + Vector3.new(0, 5, 0)
+				HRP().Velocity = Vector3.new(0,120,0)
+				HRP().CFrame += Vector3.new(0,4,0)
 			end
-
-			-- Auto Candy
 			if AutoCandy then
-				for _,candy in pairs(workspace:GetDescendants()) do
-					if candy.Name:lower():find("candy") and candy:IsA("BasePart") then
-						hrp.CFrame = candy.CFrame
-						task.wait(0.15)
+				for _,c in pairs(workspace:GetDescendants()) do
+					if c:IsA("BasePart") and c.Name:lower():find("candy") then
+						HRP().CFrame = c.CFrame
+						task.wait(0.12)
+					end
+				end
+			end
+			if SmartEvade then
+				for _,b in pairs(workspace:GetDescendants()) do
+					if b:IsA("Model") and b.Name:lower():find("bot") and b:FindFirstChild("HumanoidRootPart") then
+						if (b.HumanoidRootPart.Position - HRP().Position).Magnitude < 30 then
+							HRP().Velocity = (HRP().Position - b.HumanoidRootPart.Position).Unit * 80
+						end
 					end
 				end
 			end
@@ -125,34 +184,25 @@ end)
 -- MISC
 --------------------------------------------------
 
-MiscTab:CreateButton({
+Misc:CreateButton({
 	Name = "Anti AFK",
 	Callback = function()
 		local vu = game:GetService("VirtualUser")
-		Players.LocalPlayer.Idled:Connect(function()
-			vu:Button2Down(Vector2.new(0,0),workspace.CurrentCamera.CFrame)
+		LocalPlayer.Idled:Connect(function()
+			vu:Button2Down(Vector2.new(0,0),Camera.CFrame)
 			task.wait(1)
-			vu:Button2Up(Vector2.new(0,0),workspace.CurrentCamera.CFrame)
+			vu:Button2Up(Vector2.new(0,0),Camera.CFrame)
 		end)
 	end
 })
 
-MiscTab:CreateButton({
-	Name = "Reset Character",
-	Callback = function()
-		LocalPlayer.Character:BreakJoints()
-	end
-})
-
-MiscTab:CreateButton({
+Misc:CreateButton({
 	Name = "Destroy GUI",
-	Callback = function()
-		Rayfield:Destroy()
-	end
+	Callback = function() Rayfield:Destroy() end
 })
 
 Rayfield:Notify({
 	Title = "kencute24 Hub",
-	Content = "Script Evade đã load thành công!",
-	Duration = 5
+	Content = "Loaded FULL Evade!",
+	Duration = 4
 })
