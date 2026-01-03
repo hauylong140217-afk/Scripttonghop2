@@ -1,68 +1,72 @@
---// kencute24 Hub | Blade Ball (Allusive-like | Delta)
-local Rayfield = loadstring(game:HttpGet("https://sirius.menu/rayfield"))()
+--// kencute24 Hub | Blade Ball | Delta FULL FIXED
 
--- Services
+local success, Rayfield = pcall(function()
+	return loadstring(game:HttpGet("https://raw.githubusercontent.com/shlexware/Rayfield/main/source"))()
+end)
+
+if not success then warn("Rayfield load fail") return end
+
 local Players = game:GetService("Players")
 local RS = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
-local Stats = game:GetService("Stats")
-
--- Player
 local LP = Players.LocalPlayer
 local Char = LP.Character or LP.CharacterAdded:Wait()
 local HRP = Char:WaitForChild("HumanoidRootPart")
 
--- Remotes
-local Remotes = RS:WaitForChild("Remotes")
-local ParryRemote = Remotes:WaitForChild("ParryAttempt")
-local AttackRemote = Remotes:WaitForChild("Attack")
+-- Safe Remotes
+local Remotes
+for i=1,50 do
+	Remotes = RS:FindFirstChild("Remotes")
+	if Remotes then break end
+	task.wait(0.1)
+end
+if not Remotes then warn("Remotes missing") return end
+
+local ParryRemote = Remotes:FindFirstChild("ParryAttempt")
+local AttackRemote = Remotes:FindFirstChild("Attack")
+if not ParryRemote or not AttackRemote then warn("Parry/Attack missing") return end
 
 -- UI
 local Window = Rayfield:CreateWindow({
 	Name = "kencute24 Hub | Blade Ball",
 	LoadingTitle = "kencute24 Hub",
-	LoadingSubtitle = "Allusive-like (Free Max)",
+	LoadingSubtitle = "Delta Full Fix",
 	KeySystem = false
 })
 
-local Combat = Window:CreateTab("⚔ Combat", 4483362458)
-local Adv    = Window:CreateTab("⚙ Advanced", 4483362458)
-local Render = Window:CreateTab("🧊 Render", 4483362458)
-local Info   = Window:CreateTab("ℹ Info", 4483362458)
+-- Tabs
+local CombatTab  = Window:CreateTab("⚔ Combat", 4483362458)
+local RenderTab  = Window:CreateTab("🧊 Render", 4483362458)
+local AdvTab     = Window:CreateTab("⚙ Advanced", 4483362458)
+local InfoTab    = Window:CreateTab("ℹ Info", 4483362458)
 
 -- State
-local AutoParry, AutoSpam = false, false
+local AutoParry = false
+local AutoSpam = false
+local NoRender = false
 local Humanizer = true
 
--- Tunables (Preset VN)
+local lastParry, lastSpam = 0,0
 local ParryDistance = 85
 local Bias = 0.028
 local BaseCD = 0.22
 local SpamDelay = 0.16
 
-local lastParry, lastSpam = 0, 0
-
 -- Utils
 local function Ping()
-	local s = Stats.Network.ServerStatsItem["Data Ping"]:GetValueString()
+	local s = game:GetService("Stats").Network.ServerStatsItem["Data Ping"]:GetValueString()
 	local n = tonumber(s:match("%d+")) or 50
 	return n/1000
 end
-
 local function Rand(a,b)
 	if not Humanizer then return a end
 	return a + math.random()*(b-a)
 end
-
 local function GetBall()
 	for _,v in pairs(workspace:GetChildren()) do
-		if v:IsA("BasePart") and v.Name:lower():find("ball") then
-			return v
-		end
+		if v:IsA("BasePart") and v.Name:lower():find("ball") then return v end
 	end
 end
-
--- Target check (chỉ parry khi bóng hướng về mình)
 local function IsTargeted(ball)
 	local vel = ball.AssemblyLinearVelocity or ball.Velocity
 	if not vel then return false end
@@ -70,55 +74,45 @@ local function IsTargeted(ball)
 	return vel.Unit:Dot(dir) > 0.6
 end
 
--- Auto Parry (Prediction + Target)
+-- Auto Parry
 RunService.Heartbeat:Connect(function()
 	if not AutoParry then return end
-	local ball = GetBall(); if not ball then return end
-
-	local vel = ball.AssemblyLinearVelocity or ball.Velocity
-	if not vel or vel.Magnitude < 6 then return end
-
-	local dist = (ball.Position - HRP.Position).Magnitude
-	if dist > ParryDistance then return end
+	local ball = GetBall()
+	if not ball then return end
+	if (ball.Position - HRP.Position).Magnitude > ParryDistance then return end
 	if not IsTargeted(ball) then return end
-
-	local impact = dist / vel.Magnitude
-	if impact > (Ping() + Bias) then return end
-
-	if tick() - lastParry < Rand(BaseCD, BaseCD+0.04) then return end
+	if tick()-lastParry < Rand(BaseCD,BaseCD+0.04) then return end
 	lastParry = tick()
 	pcall(function() ParryRemote:FireServer() end)
 end)
 
--- Smart Auto Spam
+-- Auto Spam
 RunService.Heartbeat:Connect(function()
 	if not AutoSpam then return end
-	if tick() - lastSpam < Rand(SpamDelay, SpamDelay+0.05) then return end
+	if tick()-lastSpam < Rand(SpamDelay,SpamDelay+0.05) then return end
 	if not GetBall() then return end
 	lastSpam = tick()
 	pcall(function() AttackRemote:FireServer() end)
 end)
 
--- UI
-Combat:CreateToggle({ Name="🛡 Auto Parry (Allusive-like)", CurrentValue=false, Callback=function(v) AutoParry=v end })
-Combat:CreateToggle({ Name="🔥 Auto Spam (Smart)", CurrentValue=false, Callback=function(v) AutoSpam=v end })
-
-Adv:CreateToggle({ Name="🧠 Humanizer (Khuyến nghị ON)", CurrentValue=true, Callback=function(v) Humanizer=v end })
-Adv:CreateSlider({ Name="Parry Distance", Range={60,110}, Increment=1, CurrentValue=ParryDistance, Callback=function(v) ParryDistance=v end })
-Adv:CreateSlider({ Name="Prediction Bias", Range={0.015,0.05}, Increment=0.001, CurrentValue=Bias, Callback=function(v) Bias=v end })
-
-Render:CreateButton({
-	Name="⚡ No Render (Fix Lag)",
-	Callback=function()
-		for _,v in pairs(workspace:GetDescendants()) do
-			if v:IsA("BasePart") and not v:IsDescendantOf(Char) then
-				v.LocalTransparencyModifier = 1
-			end
+-- No Render loop (Fix Lag)
+RunService.Heartbeat:Connect(function()
+	if not NoRender then return end
+	for _,v in pairs(workspace:GetDescendants()) do
+		if v:IsA("BasePart") and not v:IsDescendantOf(Char) then
+			v.LocalTransparencyModifier = 1
 		end
 	end
-})
+end)
 
-Info:CreateParagraph({
-	Title="kencute24 Hub",
-	Content="Allusive-like (Free Max)\nPrediction + Target-check + Humanizer.\nTip: Bật Parry trước, đợi 1–2s rồi bật Spam."
-})
+-- UI Toggles / Sliders
+CombatTab:CreateToggle({ Name="🛡 Auto Parry", CurrentValue=false, Callback=function(v) AutoParry=v end })
+CombatTab:CreateToggle({ Name="🔥 Auto Spam", CurrentValue=false, Callback=function(v) AutoSpam=v end })
+
+RenderTab:CreateToggle({ Name="⚡ No Render", CurrentValue=false, Callback=function(v) NoRender=v end })
+
+AdvTab:CreateToggle({ Name="🧠 Humanizer", CurrentValue=true, Callback=function(v) Humanizer=v end })
+AdvTab:CreateSlider({ Name="Parry Distance", Range={60,110}, Increment=1, CurrentValue=ParryDistance, Callback=function(v) ParryDistance=v end })
+AdvTab:CreateSlider({ Name="Prediction Bias", Range={0.015,0.05}, Increment=0.001, CurrentValue=Bias, Callback=function(v) Bias=v end })
+
+InfoTab:CreateParagraph({ Title="kencute24 Hub", Content="Blade Ball | Allusive-style (Free Max)\nPrediction + Target-check + Humanizer.\nBật Parry trước, chờ 1-2s rồi bật Spam.\nNo Render chạy liên tục để giảm lag." })
