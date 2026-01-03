@@ -1,0 +1,200 @@
+local Rayfield = loadstring(game:HttpGet("https://sirius.menu/rayfield"))()
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local LocalPlayer = Players.LocalPlayer
+local Camera = workspace.CurrentCamera
+
+local Window = Rayfield:CreateWindow({
+	Name = "kencute24 Hub",
+	LoadingTitle = "kencute24",
+	LoadingSubtitle = "Dead Rails",
+	ConfigurationSaving = {
+		Enabled = false
+	},
+	KeySystem = false -- ❌ KHÔNG KEY
+})
+
+---------------------------------------------------
+-- 👁 ESP
+---------------------------------------------------
+local ESPTab = Window:CreateTab("👁 ESP", 4483362458)
+
+local ESPEnabled = false
+local ESPObjects = {}
+
+local function ClearESP()
+	for _,v in pairs(ESPObjects) do
+		if v then v:Remove() end
+	end
+	ESPObjects = {}
+end
+
+local function CreateESP(model, color)
+	local text = Drawing.new("Text")
+	text.Size = 13
+	text.Center = true
+	text.Outline = true
+	text.Color = color
+	table.insert(ESPObjects, text)
+
+	RunService.RenderStepped:Connect(function()
+		if not ESPEnabled or not model or not model:FindFirstChild("HumanoidRootPart") then
+			text.Visible = false
+			return
+		end
+		local pos, onscreen = Camera:WorldToViewportPoint(model.HumanoidRootPart.Position)
+		if onscreen then
+			local dist = math.floor((Camera.CFrame.Position - model.HumanoidRootPart.Position).Magnitude)
+			text.Position = Vector2.new(pos.X, pos.Y)
+			text.Text = model.Name .. " [" .. dist .. "m]"
+			text.Visible = true
+		else
+			text.Visible = false
+		end
+	end)
+end
+
+ESPTab:CreateToggle({
+	Name = "ESP Player + Distance",
+	CurrentValue = false,
+	Callback = function(v)
+		ESPEnabled = v
+		ClearESP()
+		if v then
+			for _,plr in pairs(Players:GetPlayers()) do
+				if plr ~= LocalPlayer and plr.Character then
+					CreateESP(plr.Character, Color3.fromRGB(0,255,0))
+				end
+			end
+		end
+	end
+})
+
+ESPTab:CreateToggle({
+	Name = "ESP NPC + Distance",
+	CurrentValue = false,
+	Callback = function(v)
+		ESPEnabled = v
+		ClearESP()
+		if v then
+			for _,npc in pairs(workspace:GetDescendants()) do
+				if npc:IsA("Model") and npc:FindFirstChild("Humanoid") then
+					CreateESP(npc, Color3.fromRGB(255,0,0))
+				end
+			end
+		end
+	end
+})
+
+---------------------------------------------------
+-- 🧊 NPC
+---------------------------------------------------
+local NPCTab = Window:CreateTab("🧊 NPC", 4483362458)
+
+NPCTab:CreateButton({
+	Name = "Freeze NPC",
+	Callback = function()
+		for _,npc in pairs(workspace:GetDescendants()) do
+			if npc:IsA("Model") and npc:FindFirstChild("HumanoidRootPart") then
+				npc.HumanoidRootPart.Anchored = true
+			end
+		end
+	end
+})
+
+NPCTab:CreateButton({
+	Name = "Remove NPC",
+	Callback = function()
+		for _,npc in pairs(workspace:GetDescendants()) do
+			if npc:IsA("Model") and npc:FindFirstChild("Humanoid") and npc ~= LocalPlayer.Character then
+				npc:Destroy()
+			end
+		end
+	end
+})
+
+---------------------------------------------------
+-- 🚀 MOVEMENT
+---------------------------------------------------
+local MoveTab = Window:CreateTab("🚀 Movement", 4483362458)
+
+MoveTab:CreateSlider({
+	Name = "Speed",
+	Range = {16, 200},
+	Increment = 1,
+	CurrentValue = 16,
+	Callback = function(v)
+		if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
+			LocalPlayer.Character.Humanoid.WalkSpeed = v
+		end
+	end
+})
+
+MoveTab:CreateToggle({
+	Name = "Noclip",
+	CurrentValue = false,
+	Callback = function(v)
+		RunService.Stepped:Connect(function()
+			if v and LocalPlayer.Character then
+				for _,p in pairs(LocalPlayer.Character:GetChildren()) do
+					if p:IsA("BasePart") then
+						p.CanCollide = false
+					end
+				end
+			end
+		end)
+	end
+})
+
+MoveTab:CreateToggle({
+	Name = "Fly",
+	CurrentValue = false,
+	Callback = function(v)
+		local char = LocalPlayer.Character
+		local hrp = char and char:FindFirstChild("HumanoidRootPart")
+		if not hrp then return end
+
+		if v then
+			local bv = Instance.new("BodyVelocity", hrp)
+			bv.MaxForce = Vector3.new(1e9,1e9,1e9)
+			RunService.RenderStepped:Connect(function()
+				bv.Velocity = Camera.CFrame.LookVector * 50
+			end)
+		else
+			for _,x in pairs(hrp:GetChildren()) do
+				if x:IsA("BodyVelocity") then x:Destroy() end
+			end
+		end
+	end
+})
+
+---------------------------------------------------
+-- 🔗 AUTO
+---------------------------------------------------
+local AutoTab = Window:CreateTab("🔗 Auto", 4483362458)
+
+AutoTab:CreateToggle({
+	Name = "Auto Bond",
+	CurrentValue = false,
+	Callback = function(v)
+		getgenv().AutoBond = v
+		task.spawn(function()
+			while getgenv().AutoBond do
+				for _,tool in pairs(LocalPlayer.Backpack:GetChildren()) do
+					if tool:IsA("Tool") then
+						tool.Parent = LocalPlayer.Character
+					end
+				end
+				task.wait(0.5)
+			end
+		end)
+	end
+})
+
+---------------------------------------------------
+-- 📌 ABOUT
+---------------------------------------------------
+local AboutTab = Window:CreateTab("📌 About", 4483362458)
+AboutTab:CreateLabel("kencute24 Hub")
+AboutTab:CreateLabel("Dead Rails")
+AboutTab:CreateLabel("NO KEY - FULL FUNCTION")
