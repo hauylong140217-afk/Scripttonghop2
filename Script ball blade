@@ -102,7 +102,7 @@ for i,tabName in ipairs(Tabs) do
 	frame.Name = tabName
 	frame.Size = UDim2.new(0,200,0,300)
 	frame.Position = UDim2.new(0,10,0,50)
-	frame.BackgroundColor3 = Color3.fromRGB(15,76,129) -- Blue background
+	frame.BackgroundColor3 = Color3.fromRGB(15,76,200) -- Blue background
 	frame.Visible = (i==1)
 	Frames[tabName] = frame
 end
@@ -113,7 +113,7 @@ for i,tabName in ipairs(Tabs) do
 	btn.Size = UDim2.new(0,80,0,30)
 	btn.Position = UDim2.new(0,10+((i-1)*85),0,10)
 	btn.Text = tabName
-	btn.BackgroundColor3 = Color3.fromRGB(30,120,200) -- Blue button
+	btn.BackgroundColor3 = Color3.fromRGB(0,120,255) -- Blue button
 	btn.TextColor3 = Color3.fromRGB(255,255,255)
 	btn.MouseButton1Click:Connect(function()
 		for name,frame in pairs(Frames) do
