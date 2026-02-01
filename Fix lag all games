@@ -1,0 +1,162 @@
+--========================================
+-- kencute24 fix lag | Rayfield FULL
+--========================================
+
+local Rayfield = loadstring(game:HttpGet("https://sirius.menu/rayfield"))()
+
+------------------------------------------------
+-- WINDOW
+------------------------------------------------
+local Window = Rayfield:CreateWindow({
+	Name = "⚡ kencute24 fix lag ⚡",
+	LoadingTitle = "kencute24",
+	LoadingSubtitle = "FPS Boost | Fix Lag",
+	KeySystem = false
+})
+
+------------------------------------------------
+-- TABS
+------------------------------------------------
+local MainTab = Window:CreateTab("🚀 Fix Lag", 4483362458)
+local FPSTab  = Window:CreateTab("🎮 FPS", 4483362458)
+local ESPTab  = Window:CreateTab("👁 ESP", 4483362458)
+local AllTab  = Window:CreateTab("💥 ALL", 4483362458)
+local InfoTab = Window:CreateTab("ℹ Info", 4483362458)
+
+------------------------------------------------
+-- SERVICES
+------------------------------------------------
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local Lighting = game:GetService("Lighting")
+
+------------------------------------------------
+-- FIX LAG FUNCTIONS (KHÔNG XOÁ MẶT ĐẤT)
+------------------------------------------------
+local function FixLag1()
+	for _,v in pairs(workspace:GetDescendants()) do
+		if v:IsA("ParticleEmitter") or v:IsA("Trail")
+		or v:IsA("Smoke") or v:IsA("Fire") then
+			v.Enabled = false
+		end
+	end
+end
+
+local function FixLag2()
+	FixLag1()
+	Lighting.GlobalShadows = false
+	Lighting.FogEnd = 9e9
+	Lighting.Brightness = 1
+end
+
+local function FixLag3()
+	FixLag2()
+	settings().Rendering.QualityLevel = Enum.QualityLevel.Level01
+end
+
+local function ExtremeFixLag()
+	FixLag3()
+	for _,v in pairs(workspace:GetDescendants()) do
+		if v:IsA("Decal") or v:IsA("Texture") then
+			v.Transparency = 1
+		end
+	end
+end
+
+------------------------------------------------
+-- FIX LAG BUTTONS
+------------------------------------------------
+MainTab:CreateButton({Name="Fix Lag Cấp 1", Callback=FixLag1})
+MainTab:CreateButton({Name="Fix Lag Cấp 2", Callback=FixLag2})
+MainTab:CreateButton({Name="Fix Lag Cấp 3", Callback=FixLag3})
+MainTab:CreateButton({Name="Extreme Fix Lag", Callback=ExtremeFixLag})
+
+------------------------------------------------
+-- FPS CAP
+------------------------------------------------
+local function SetFPS(v)
+	if setfpscap then
+		setfpscap(v)
+	end
+end
+
+FPSTab:CreateButton({Name="FPS 60", Callback=function() SetFPS(60) end})
+FPSTab:CreateButton({Name="FPS 120", Callback=function() SetFPS(120) end})
+FPSTab:CreateButton({Name="FPS 144", Callback=function() SetFPS(144) end})
+FPSTab:CreateButton({Name="FPS 240", Callback=function() SetFPS(240) end})
+
+------------------------------------------------
+-- FPS COUNTER
+------------------------------------------------
+local fpsLabel = FPSTab:CreateLabel("FPS: ...")
+local frames, last = 0, tick()
+
+RunService.RenderStepped:Connect(function()
+	frames += 1
+	if tick() - last >= 1 then
+		fpsLabel:Set("FPS: "..frames)
+		frames = 0
+		last = tick()
+	end
+end)
+
+------------------------------------------------
+-- ESP NHẸ (KHÔNG ĂN FPS)
+------------------------------------------------
+local espEnabled = false
+ESPTab:CreateToggle({
+	Name = "ESP Player (Light)",
+	CurrentValue = false,
+	Callback = function(v)
+		espEnabled = v
+	end
+})
+
+------------------------------------------------
+-- ALL IN ONE
+------------------------------------------------
+AllTab:CreateButton({
+	Name = "🔥 ALL FIX (Lag + FPS)",
+	Callback = function()
+		ExtremeFixLag()
+		SetFPS(240)
+	end
+})
+
+------------------------------------------------
+-- INFO + COPY LINK (ĐÃ FIX)
+------------------------------------------------
+InfoTab:CreateLabel("👑 Script: kencute24 fix lag")
+
+InfoTab:CreateLabel("📌 Discord:")
+InfoTab:CreateLabel("https://discord.gg/A98NkS4Xn")
+
+InfoTab:CreateButton({
+	Name = "📋 Copy Discord",
+	Callback = function()
+		if setclipboard then
+			setclipboard("https://discord.gg/A98NkS4Xn")
+		end
+	end
+})
+
+InfoTab:CreateLabel("🎵 TikTok:")
+InfoTab:CreateLabel("https://tiktok.com/@kencute24")
+
+InfoTab:CreateButton({
+	Name = "📋 Copy TikTok",
+	Callback = function()
+		if setclipboard then
+			setclipboard("https://tiktok.com/@kencute24")
+		end
+	end
+})
+
+------------------------------------------------
+-- NOTIFY
+------------------------------------------------
+Rayfield:Notify({
+	Title = "kencute24",
+	Content = "Loaded | Fix Lag + FPS Boost",
+	Duration = 5
+})
