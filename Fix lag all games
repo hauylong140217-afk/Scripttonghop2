@@ -1,193 +1,121 @@
---==================================================
--- kencute24 fix lag | FULL + ADD MISSING
---==================================================
+--// kencute24 | LOW ALL FIX LAG + FASTFLAG (CODE ONLY)
 
-local Rayfield = loadstring(game:HttpGet("https://sirius.menu/rayfield"))()
-
---------------------------------------------------
--- WINDOW
---------------------------------------------------
-local Window = Rayfield:CreateWindow({
-	Name = "⚡ kencute24 fix lag ⚡",
-	LoadingTitle = "kencute24",
-	LoadingSubtitle = "Gray Cloud | FPS Boost",
-	KeySystem = false
-})
-
---------------------------------------------------
--- TABS
---------------------------------------------------
-local MainTab = Window:CreateTab("🚀 Fix Lag", 4483362458)
-local FPSTab  = Window:CreateTab("🎮 FPS", 4483362458)
-local InfoTab = Window:CreateTab("ℹ Info", 4483362458)
-
---------------------------------------------------
--- SERVICES
---------------------------------------------------
-local Lighting = game:GetService("Lighting")
-local RunService = game:GetService("RunService")
-local Workspace = game:GetService("Workspace")
-
---------------------------------------------------
--- SAVE DEFAULT (RESET)
---------------------------------------------------
-local DEFAULT = {
-	FogStart = Lighting.FogStart,
-	FogEnd = Lighting.FogEnd,
-	FogColor = Lighting.FogColor,
-	Brightness = Lighting.Brightness,
-	GlobalShadows = Lighting.GlobalShadows,
-	EnvDiff = Lighting.EnvironmentDiffuseScale,
-	EnvSpec = Lighting.EnvironmentSpecularScale,
-	OutdoorAmbient = Lighting.OutdoorAmbient
-}
-
---------------------------------------------------
--- CORE: GRAY CLOUD + REMOVE TEXTURE
---------------------------------------------------
-local function ApplyGray()
-	Lighting.FogStart = 0
-	Lighting.FogEnd = 300
-	Lighting.FogColor = Color3.fromRGB(170,170,170)
-	Lighting.Brightness = 1
-	Lighting.GlobalShadows = false
-	Lighting.EnvironmentDiffuseScale = 0
-	Lighting.EnvironmentSpecularScale = 0
-	Lighting.OutdoorAmbient = Color3.fromRGB(150,150,150)
-
-	for _,v in ipairs(Workspace:GetDescendants()) do
-		if v:IsA("Texture") or v:IsA("Decal") then
-			v.Transparency = 1
-		elseif v:IsA("ParticleEmitter") or v:IsA("Trail")
-		or v:IsA("Smoke") or v:IsA("Fire") or v:IsA("Beam") then
-			v.Enabled = false
-		end
-	end
-end
-
---------------------------------------------------
--- LOW POLY MODE
---------------------------------------------------
-local function LowPoly()
-	for _,v in ipairs(Workspace:GetDescendants()) do
-		if v:IsA("BasePart") then
-			v.Material = Enum.Material.Plastic
-			v.Reflectance = 0
-			v.CastShadow = false
-		end
-	end
-end
-
---------------------------------------------------
--- RESET GRAPHICS
---------------------------------------------------
-local function ResetGraphics()
-	Lighting.FogStart = DEFAULT.FogStart
-	Lighting.FogEnd = DEFAULT.FogEnd
-	Lighting.FogColor = DEFAULT.FogColor
-	Lighting.Brightness = DEFAULT.Brightness
-	Lighting.GlobalShadows = DEFAULT.GlobalShadows
-	Lighting.EnvironmentDiffuseScale = DEFAULT.EnvDiff
-	Lighting.EnvironmentSpecularScale = DEFAULT.EnvSpec
-	Lighting.OutdoorAmbient = DEFAULT.OutdoorAmbient
-
-	for _,v in ipairs(Workspace:GetDescendants()) do
-		if v:IsA("Texture") or v:IsA("Decal") then
-			v.Transparency = 0
-		elseif v:IsA("ParticleEmitter") or v:IsA("Trail")
-		or v:IsA("Smoke") or v:IsA("Fire") or v:IsA("Beam") then
-			v.Enabled = true
-		elseif v:IsA("BasePart") then
-			v.CastShadow = true
-		end
-	end
-end
-
---------------------------------------------------
--- AUTO HOOK (DESCENDANT ADDED)
---------------------------------------------------
-local autoHook = false
-local hookConn
-
-local function HookSpawn()
-	if hookConn then hookConn:Disconnect() end
-	hookConn = Workspace.DescendantAdded:Connect(function(v)
-		if not autoHook then return end
-		if v:IsA("Texture") or v:IsA("Decal") then
-			v.Transparency = 1
-		elseif v:IsA("ParticleEmitter") or v:IsA("Trail")
-		or v:IsA("Smoke") or v:IsA("Fire") or v:IsA("Beam") then
-			v.Enabled = false
-		elseif v:IsA("BasePart") then
-			v.Material = Enum.Material.Plastic
-			v.Reflectance = 0
-			v.CastShadow = false
-		end
-	end)
-end
-
---------------------------------------------------
--- BUTTONS
---------------------------------------------------
-MainTab:CreateButton({Name="☁️ Gray Cloud + Remove Texture", Callback=ApplyGray})
-MainTab:CreateButton({Name="🧊 Low Poly Mode", Callback=LowPoly})
-MainTab:CreateButton({Name="♻️ Reset Graphics", Callback=ResetGraphics})
-
-MainTab:CreateToggle({
-	Name = "🔄 Auto Hook Spawn (Anti Respawn Lag)",
-	CurrentValue = false,
-	Callback = function(v)
-		autoHook = v
-		if v then HookSpawn() end
-	end
-})
-
---------------------------------------------------
--- FPS CAP
---------------------------------------------------
-local function SetFPS(v) if setfpscap then setfpscap(v) end end
-FPSTab:CreateButton({Name="FPS 60",  Callback=function() SetFPS(60) end})
-FPSTab:CreateButton({Name="FPS 120", Callback=function() SetFPS(120) end})
-FPSTab:CreateButton({Name="FPS 144", Callback=function() SetFPS(144) end})
-FPSTab:CreateButton({Name="FPS 240", Callback=function() SetFPS(240) end})
-
---------------------------------------------------
--- FPS COUNTER
---------------------------------------------------
-local fpsLabel = FPSTab:CreateLabel("FPS: ...")
-local frames, last = 0, tick()
-RunService.RenderStepped:Connect(function()
-	frames += 1
-	if tick() - last >= 1 then
-		fpsLabel:Set("FPS: "..frames)
-		frames = 0
-		last = tick()
-	end
+-- FASTFLAG (nếu executor hỗ trợ)
+pcall(function()
+    if setfflag then
+        setfflag("DebugDisableFPSLock", "True")
+        setfflag("HumanoidParallelRemoveNoPhysics", "True")
+        setfflag("HumanoidParallelRemoveNoPhysicsNoSim", "True")
+        setfflag("TaskSchedulerTargetFps", "240")
+        setfflag("RenderDistanceScale", "0.1")
+        setfflag("GraphicsQualityLevel", "1")
+    end
 end)
 
---------------------------------------------------
--- INFO
---------------------------------------------------
-InfoTab:CreateLabel("👑 Script: kencute24 fix lag")
-InfoTab:CreateLabel("☁️ Gray | 🧊 Low Poly | 🔄 Auto Hook")
-InfoTab:CreateLabel("📌 Discord:")
-InfoTab:CreateLabel("https://discord.gg/A98NkS4Xn")
-InfoTab:CreateButton({
-	Name = "📋 Copy Discord",
-	Callback = function() if setclipboard then setclipboard("https://discord.gg/A98NkS4Xn") end end
-})
-InfoTab:CreateLabel("🎵 TikTok:")
-InfoTab:CreateLabel("https://tiktok.com/@kencute24")
-InfoTab:CreateButton({
-	Name = "📋 Copy TikTok",
-	Callback = function() if setclipboard then setclipboard("https://tiktok.com/@kencute24") end end
+-- FPS CAP
+pcall(function()
+    if setfpscap then
+        setfpscap(60)
+    end
+end)
+
+-- SERVICES
+local Lighting = game:GetService("Lighting")
+local Workspace = game:GetService("Workspace")
+
+-- LIGHTING LOW
+for _,v in ipairs(Lighting:GetChildren()) do
+    if v:IsA("PostEffect") then
+        v.Enabled = false
+    end
+end
+Lighting.GlobalShadows = false
+Lighting.EnvironmentDiffuseScale = 0
+Lighting.EnvironmentSpecularScale = 0
+Lighting.FogEnd = 1e9
+Lighting.Brightness = 1
+
+-- LOW PART
+local function LowPart(o)
+    if o:IsA("BasePart") then
+        o.Material = Enum.Material.Plastic
+        o.Reflectance = 0
+        o.CastShadow = false
+    end
+end
+
+-- REMOVE TEXTURE
+local function RemoveTex(o)
+    if o:IsA("Texture") or o:IsA("Decal") then
+        o:Destroy()
+    end
+end
+
+-- REMOVE EFFECT
+local function RemoveFx(o)
+    if o:IsA("ParticleEmitter")
+    or o:IsA("Trail")
+    or o:IsA("Beam")
+    or o:IsA("Fire")
+    or o:IsA("Smoke")
+    or o:IsA("Sparkles") then
+        o.Enabled = false
+    end
+end
+
+-- APPLY ALL
+for _,v in ipairs(Workspace:GetDescendants()) do
+    LowPart(v)
+    RemoveTex(v)
+    RemoveFx(v)
+end
+
+Workspace.DescendantAdded:Connect(function(v)
+    task.wait()
+    pcall(function()
+        LowPart(v)
+        RemoveTex(v)
+        RemoveFx(v)
+    end)
+end)
+
+-- UI
+local Rayfield = loadstring(game:HttpGet("https://sirius.menu/rayfield"))()
+local Window = Rayfield:CreateWindow({
+    Name = "kencute24 | LOW ALL FIX LAG",
+    LoadingTitle = "kencute24",
+    LoadingSubtitle = "Low All + FastFlag",
+    ConfigurationSaving = {Enabled = false},
+    KeySystem = false
 })
 
---------------------------------------------------
--- NOTIFY
---------------------------------------------------
+local Main = Window:CreateTab("LOW ALL", 4483362458)
+local Info = Window:CreateTab("INFO", 4483362458)
+
+Main:CreateButton({
+    Name = "RE-APPLY LOW ALL",
+    Callback = function()
+        for _,v in ipairs(Workspace:GetDescendants()) do
+            LowPart(v)
+            RemoveTex(v)
+            RemoveFx(v)
+        end
+    end
+})
+
+Info:CreateParagraph({
+    Title = "kencute24",
+    Content =
+        "LOW ALL FIX LAG\n"..
+        "Texture removed\n"..
+        "Effects disabled\n"..
+        "FastFlag if supported\n\n"..
+        "Discord:\nhttps://discord.gg/A98NkS4Xn\n"..
+        "TikTok:\nhttps://tiktok.com/@kencute24"
+})
+
 Rayfield:Notify({
-	Title = "kencute24",
-	Content = "Loaded | Gray + Low Poly + Auto Hook",
-	Duration = 5
+    Title = "kencute24",
+    Content = "LOW ALL APPLIED",
+    Duration = 4
 })
