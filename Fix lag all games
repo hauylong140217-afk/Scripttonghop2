@@ -1,96 +1,161 @@
---========================================
--- kencute24 fix lag | Rayfield FULL
---========================================
+--==================================================
+-- kencute24 fix lag | FULL + ADD MISSING
+--==================================================
 
 local Rayfield = loadstring(game:HttpGet("https://sirius.menu/rayfield"))()
 
-------------------------------------------------
+--------------------------------------------------
 -- WINDOW
-------------------------------------------------
+--------------------------------------------------
 local Window = Rayfield:CreateWindow({
 	Name = "⚡ kencute24 fix lag ⚡",
 	LoadingTitle = "kencute24",
-	LoadingSubtitle = "FPS Boost | Fix Lag",
+	LoadingSubtitle = "Gray Cloud | FPS Boost",
 	KeySystem = false
 })
 
-------------------------------------------------
+--------------------------------------------------
 -- TABS
-------------------------------------------------
+--------------------------------------------------
 local MainTab = Window:CreateTab("🚀 Fix Lag", 4483362458)
 local FPSTab  = Window:CreateTab("🎮 FPS", 4483362458)
-local ESPTab  = Window:CreateTab("👁 ESP", 4483362458)
-local AllTab  = Window:CreateTab("💥 ALL", 4483362458)
 local InfoTab = Window:CreateTab("ℹ Info", 4483362458)
 
-------------------------------------------------
+--------------------------------------------------
 -- SERVICES
-------------------------------------------------
-local Players = game:GetService("Players")
-local RunService = game:GetService("RunService")
+--------------------------------------------------
 local Lighting = game:GetService("Lighting")
+local RunService = game:GetService("RunService")
+local Workspace = game:GetService("Workspace")
 
-------------------------------------------------
--- FIX LAG FUNCTIONS (KHÔNG XOÁ MẶT ĐẤT)
-------------------------------------------------
-local function FixLag1()
-	for _,v in pairs(workspace:GetDescendants()) do
-		if v:IsA("ParticleEmitter") or v:IsA("Trail")
-		or v:IsA("Smoke") or v:IsA("Fire") then
+--------------------------------------------------
+-- SAVE DEFAULT (RESET)
+--------------------------------------------------
+local DEFAULT = {
+	FogStart = Lighting.FogStart,
+	FogEnd = Lighting.FogEnd,
+	FogColor = Lighting.FogColor,
+	Brightness = Lighting.Brightness,
+	GlobalShadows = Lighting.GlobalShadows,
+	EnvDiff = Lighting.EnvironmentDiffuseScale,
+	EnvSpec = Lighting.EnvironmentSpecularScale,
+	OutdoorAmbient = Lighting.OutdoorAmbient
+}
+
+--------------------------------------------------
+-- CORE: GRAY CLOUD + REMOVE TEXTURE
+--------------------------------------------------
+local function ApplyGray()
+	Lighting.FogStart = 0
+	Lighting.FogEnd = 300
+	Lighting.FogColor = Color3.fromRGB(170,170,170)
+	Lighting.Brightness = 1
+	Lighting.GlobalShadows = false
+	Lighting.EnvironmentDiffuseScale = 0
+	Lighting.EnvironmentSpecularScale = 0
+	Lighting.OutdoorAmbient = Color3.fromRGB(150,150,150)
+
+	for _,v in ipairs(Workspace:GetDescendants()) do
+		if v:IsA("Texture") or v:IsA("Decal") then
+			v.Transparency = 1
+		elseif v:IsA("ParticleEmitter") or v:IsA("Trail")
+		or v:IsA("Smoke") or v:IsA("Fire") or v:IsA("Beam") then
 			v.Enabled = false
 		end
 	end
 end
 
-local function FixLag2()
-	FixLag1()
-	Lighting.GlobalShadows = false
-	Lighting.FogEnd = 9e9
-	Lighting.Brightness = 1
-end
-
-local function FixLag3()
-	FixLag2()
-	settings().Rendering.QualityLevel = Enum.QualityLevel.Level01
-end
-
-local function ExtremeFixLag()
-	FixLag3()
-	for _,v in pairs(workspace:GetDescendants()) do
-		if v:IsA("Decal") or v:IsA("Texture") then
-			v.Transparency = 1
+--------------------------------------------------
+-- LOW POLY MODE
+--------------------------------------------------
+local function LowPoly()
+	for _,v in ipairs(Workspace:GetDescendants()) do
+		if v:IsA("BasePart") then
+			v.Material = Enum.Material.Plastic
+			v.Reflectance = 0
+			v.CastShadow = false
 		end
 	end
 end
 
-------------------------------------------------
--- FIX LAG BUTTONS
-------------------------------------------------
-MainTab:CreateButton({Name="Fix Lag Cấp 1", Callback=FixLag1})
-MainTab:CreateButton({Name="Fix Lag Cấp 2", Callback=FixLag2})
-MainTab:CreateButton({Name="Fix Lag Cấp 3", Callback=FixLag3})
-MainTab:CreateButton({Name="Extreme Fix Lag", Callback=ExtremeFixLag})
+--------------------------------------------------
+-- RESET GRAPHICS
+--------------------------------------------------
+local function ResetGraphics()
+	Lighting.FogStart = DEFAULT.FogStart
+	Lighting.FogEnd = DEFAULT.FogEnd
+	Lighting.FogColor = DEFAULT.FogColor
+	Lighting.Brightness = DEFAULT.Brightness
+	Lighting.GlobalShadows = DEFAULT.GlobalShadows
+	Lighting.EnvironmentDiffuseScale = DEFAULT.EnvDiff
+	Lighting.EnvironmentSpecularScale = DEFAULT.EnvSpec
+	Lighting.OutdoorAmbient = DEFAULT.OutdoorAmbient
 
-------------------------------------------------
--- FPS CAP
-------------------------------------------------
-local function SetFPS(v)
-	if setfpscap then
-		setfpscap(v)
+	for _,v in ipairs(Workspace:GetDescendants()) do
+		if v:IsA("Texture") or v:IsA("Decal") then
+			v.Transparency = 0
+		elseif v:IsA("ParticleEmitter") or v:IsA("Trail")
+		or v:IsA("Smoke") or v:IsA("Fire") or v:IsA("Beam") then
+			v.Enabled = true
+		elseif v:IsA("BasePart") then
+			v.CastShadow = true
+		end
 	end
 end
 
-FPSTab:CreateButton({Name="FPS 60", Callback=function() SetFPS(60) end})
+--------------------------------------------------
+-- AUTO HOOK (DESCENDANT ADDED)
+--------------------------------------------------
+local autoHook = false
+local hookConn
+
+local function HookSpawn()
+	if hookConn then hookConn:Disconnect() end
+	hookConn = Workspace.DescendantAdded:Connect(function(v)
+		if not autoHook then return end
+		if v:IsA("Texture") or v:IsA("Decal") then
+			v.Transparency = 1
+		elseif v:IsA("ParticleEmitter") or v:IsA("Trail")
+		or v:IsA("Smoke") or v:IsA("Fire") or v:IsA("Beam") then
+			v.Enabled = false
+		elseif v:IsA("BasePart") then
+			v.Material = Enum.Material.Plastic
+			v.Reflectance = 0
+			v.CastShadow = false
+		end
+	end)
+end
+
+--------------------------------------------------
+-- BUTTONS
+--------------------------------------------------
+MainTab:CreateButton({Name="☁️ Gray Cloud + Remove Texture", Callback=ApplyGray})
+MainTab:CreateButton({Name="🧊 Low Poly Mode", Callback=LowPoly})
+MainTab:CreateButton({Name="♻️ Reset Graphics", Callback=ResetGraphics})
+
+MainTab:CreateToggle({
+	Name = "🔄 Auto Hook Spawn (Anti Respawn Lag)",
+	CurrentValue = false,
+	Callback = function(v)
+		autoHook = v
+		if v then HookSpawn() end
+	end
+})
+
+--------------------------------------------------
+-- FPS CAP
+--------------------------------------------------
+local function SetFPS(v) if setfpscap then setfpscap(v) end end
+FPSTab:CreateButton({Name="FPS 60",  Callback=function() SetFPS(60) end})
 FPSTab:CreateButton({Name="FPS 120", Callback=function() SetFPS(120) end})
 FPSTab:CreateButton({Name="FPS 144", Callback=function() SetFPS(144) end})
 FPSTab:CreateButton({Name="FPS 240", Callback=function() SetFPS(240) end})
 
-------------------------------------------------
+--------------------------------------------------
 -- FPS COUNTER
-------------------------------------------------
+--------------------------------------------------
 local fpsLabel = FPSTab:CreateLabel("FPS: ...")
 local frames, last = 0, tick()
-
 RunService.RenderStepped:Connect(function()
 	frames += 1
 	if tick() - last >= 1 then
@@ -100,63 +165,29 @@ RunService.RenderStepped:Connect(function()
 	end
 end)
 
-------------------------------------------------
--- ESP NHẸ (KHÔNG ĂN FPS)
-------------------------------------------------
-local espEnabled = false
-ESPTab:CreateToggle({
-	Name = "ESP Player (Light)",
-	CurrentValue = false,
-	Callback = function(v)
-		espEnabled = v
-	end
-})
-
-------------------------------------------------
--- ALL IN ONE
-------------------------------------------------
-AllTab:CreateButton({
-	Name = "🔥 ALL FIX (Lag + FPS)",
-	Callback = function()
-		ExtremeFixLag()
-		SetFPS(240)
-	end
-})
-
-------------------------------------------------
--- INFO + COPY LINK (ĐÃ FIX)
-------------------------------------------------
+--------------------------------------------------
+-- INFO
+--------------------------------------------------
 InfoTab:CreateLabel("👑 Script: kencute24 fix lag")
-
+InfoTab:CreateLabel("☁️ Gray | 🧊 Low Poly | 🔄 Auto Hook")
 InfoTab:CreateLabel("📌 Discord:")
 InfoTab:CreateLabel("https://discord.gg/A98NkS4Xn")
-
 InfoTab:CreateButton({
 	Name = "📋 Copy Discord",
-	Callback = function()
-		if setclipboard then
-			setclipboard("https://discord.gg/A98NkS4Xn")
-		end
-	end
+	Callback = function() if setclipboard then setclipboard("https://discord.gg/A98NkS4Xn") end end
 })
-
 InfoTab:CreateLabel("🎵 TikTok:")
 InfoTab:CreateLabel("https://tiktok.com/@kencute24")
-
 InfoTab:CreateButton({
 	Name = "📋 Copy TikTok",
-	Callback = function()
-		if setclipboard then
-			setclipboard("https://tiktok.com/@kencute24")
-		end
-	end
+	Callback = function() if setclipboard then setclipboard("https://tiktok.com/@kencute24") end end
 })
 
-------------------------------------------------
+--------------------------------------------------
 -- NOTIFY
-------------------------------------------------
+--------------------------------------------------
 Rayfield:Notify({
 	Title = "kencute24",
-	Content = "Loaded | Fix Lag + FPS Boost",
+	Content = "Loaded | Gray + Low Poly + Auto Hook",
 	Duration = 5
 })
