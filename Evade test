@@ -1,0 +1,150 @@
+--[[ 
+    DRACONIC ULTIMATE - EVADE PREMIUM
+    Note: Get key at tiktok.com/@kencute24
+]]
+
+-- Hàm giải mã bảo mật hơn
+local function SecureDecode(str)
+    local b = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
+    str = string.gsub(str, '[^'..b..'=]', '')
+    local decoded = (str:gsub('.', function(x)
+        if (x == '=') then return '' end
+        local r,f='',(b:find(x)-1)
+        for i=6,1,-1 do r=r..(f%2^i-f%2^(i-1)>0 and '1' or '0') end
+        return r;
+    end):gsub('%d%d%d%d%d%d%d%d', function(x)
+        local c=0
+        for i=1,8 do c=c+(x:sub(i,i)=='1' and 2^(8-i) or 0) end
+        return string.char(c)
+    end))
+    return decoded
+end
+
+-- Key gốc: keypremiumuserbykencute24 đã được mã hóa 2 lần
+local MySecretKey = SecureDecode("YTM1dmNITTliVzE0ZFcxdmRHVnljbUo1YTJWdVkzVjBaVTR5TkE9PQ==")
+
+local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
+
+local Window = Rayfield:CreateWindow({
+   Name = "kencute24 Hub | Evade Premium",
+   LoadingTitle = "Đang kiểm tra bản quyền...",
+   LoadingSubtitle = "by Kencute24",
+   ConfigurationSaving = {
+      Enabled = true,
+      FolderName = "Kencute24_Evade", 
+      FileName = "MainConfig"
+   },
+   KeySystem = true,
+   KeySettings = {
+      Title = "KENCUTE24 KEY SYSTEM",
+      Subtitle = "Vui lòng nhập mã truy cập",
+      Note = "Lấy Key tại: tiktok.com/@ken.cute24", -- Note link tiktok của bạn
+      SaveKey = true,
+      Key = {MySecretKey}
+   }
+})
+
+-- [ TAB MOVEMENT ]
+local MainTab = Window:CreateTab("Movement", 4483362458)
+MainTab:CreateSlider({
+   Name = "Tốc độ (Speed)",
+   Range = {16, 250},
+   Increment = 1,
+   CurrentValue = 16,
+   Flag = "Speed",
+   Callback = function(v) game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = v end,
+})
+
+MainTab:CreateToggle({
+   Name = "Auto Crouch (Tự ngồi)",
+   CurrentValue = false,
+   Flag = "ACrouch",
+   Callback = function(v)
+      _G.AutoCrouch = v
+      task.spawn(function()
+         while _G.AutoCrouch do
+            game:GetService("VirtualInputManager"):SendKeyEvent(true, Enum.KeyCode.LeftControl, false, game)
+            task.wait(0.2)
+         end
+      end)
+   end,
+})
+
+-- [ TAB AUTOMATION ]
+local AutoTab = Window:CreateTab("Automation", 4483362458)
+AutoTab:CreateToggle({
+   Name = "Auto Farm Money/Tickets",
+   CurrentValue = false,
+   Flag = "AFarm",
+   Callback = function(v) _G.AutoFarm = v end,
+})
+
+AutoTab:CreateSection("Emotes")
+local SelectedEmote = "Dance"
+AutoTab:CreateDropdown({
+   Name = "Chọn Emote",
+   Options = {"Dance", "Wave", "Cheer", "Laugh", "Point"},
+   CurrentOption = {"Dance"},
+   Flag = "Emote",
+   Callback = function(Option) SelectedEmote = Option[1] end,
+})
+
+AutoTab:CreateToggle({
+   Name = "Auto Emote (Tự nhảy)",
+   CurrentValue = false,
+   Flag = "AEmote",
+   Callback = function(v)
+      _G.AutoEmote = v
+      task.spawn(function()
+         while _G.AutoEmote do
+            game:GetService("ReplicatedStorage").Events.Emote:FireServer(SelectedEmote)
+            task.wait(3)
+         end
+      end)
+   end,
+})
+
+-- [ TAB VISUALS ]
+local VisualTab = Window:CreateTab("Visuals", 4483362458)
+VisualTab:CreateToggle({
+   Name = "ESP Nextbots",
+   CurrentValue = false,
+   Flag = "ESP",
+   Callback = function(v)
+      _G.ESPBots = v
+      while _G.ESPBots do
+         for _, bot in pairs(workspace.Game.Nextbots:GetChildren()) do
+            if not bot:FindFirstChild("Highlight") then
+               local hl = Instance.new("Highlight", bot)
+               hl.FillColor = Color3.fromRGB(255, 0, 0)
+            end
+         end
+         task.wait(1)
+      end
+   end,
+})
+
+-- [ TAB SETTINGS ]
+local SettingsTab = Window:CreateTab("Settings", 4483362458)
+SettingsTab:CreateButton({
+   Name = "Lưu Cấu Hình (Save Config)",
+   Callback = function() 
+      Rayfield:SaveConfiguration() 
+      Rayfield:Notify({Title = "Hệ thống", Content = "Đã lưu cài đặt thành công!"})
+   end,
+})
+
+-- [ GAME LOOP ]
+task.spawn(function()
+    while task.wait(0.5) do
+        if _G.AutoFarm then
+            for _, item in pairs(workspace:GetChildren()) do
+                if item.Name == "Money" or item.Name == "Ticket" then
+                    item.CFrame = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame
+                end
+            end
+        end
+    end
+end)
+
+Rayfield:LoadConfiguration()
