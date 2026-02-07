@@ -2,147 +2,160 @@ local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
 local Window = Rayfield:CreateWindow({
    Name = "Evade | script premium by kencute24",
-   LoadingTitle = "Evade Premium Hub",
-   LoadingSubtitle = "by kencute24",
-   ConfigurationSaving = {Enabled = true, FolderName = "EvadePremium"},
+   LoadingTitle = "Evade Premium System v0.5",
+   LoadingSubtitle = "Licensed to kencute24 | Power by Gemini AI", 
+   ConfigurationSaving = {Enabled = true, FolderName = "EvadeKen"},
    KeySystem = true,
    KeySettings = {
-      Title = "Key System premium",
-      Subtitle = "Enter Key to Access",
-      Note = "key premium",
-      FileName = "EvadeKey",
+      Title = "License Authentication",
+      Subtitle = "Verification Required",
+      Note = "Contact kencute24 for License Key", 
+      FileName = "EvadeKeyConfig",
       SaveKey = true,
-      Key = {"premiumkeyrobloxevadekencute24"}
+      Key = {"KEN-PREMIUM-V2-888"} 
    }
 })
 
 local lp = game.Players.LocalPlayer
+local UIS = game:GetService("UserInputService")
 local RunService = game:GetService("RunService")
-local UserInputService = game:GetService("UserInputService")
 
 local Config = {
-    Speed = 16,
-    JumpCap = 50,
-    FOV = 70,
-    Bhop = false,
-    ESP_Player = false,
-    ESP_Nextbot = false,
-    AutoRespawn = false,
-    InfiniteSlide = false,
-    SlideSpeed = -8
+    Speed = 16, JumpCap = 50, FOV = 70,
+    AutoJump = false, ESP_Player = false, ESP_Nextbot = false, ESP_Ticket = false,
+    AutoRespawn = false, AntiAFK = false, JumpKey = Enum.KeyCode.Space, 
+    Bounce = false, BounceAmt = 80, SuperBounce = false,
+    AutoCarry = false, CarryKey = Enum.KeyCode.F4,
+    NoCameraShake = false, FullBright = false
 }
 
--- Hàm tạo ESP Tên gọn nhẹ
-local function CreateESP(part, name, color)
-    if not part or part:FindFirstChild("KenESP") then return end
-    local bgui = Instance.new("BillboardGui", part)
-    bgui.Name = "KenESP"
-    bgui.AlwaysOnTop = true
-    bgui.Size = UDim2.new(0, 200, 0, 50)
-    bgui.ExtentsOffset = Vector3.new(0, 3, 0)
-    
-    local nametag = Instance.new("TextLabel", bgui)
-    nametag.Text = name
-    nametag.Size = UDim2.new(1, 0, 1, 0)
-    nametag.BackgroundTransparency = 1
-    nametag.TextColor3 = color
-    nametag.TextStrokeTransparency = 0
-    nametag.Font = Enum.Font.SourceSansBold
-    nametag.TextSize = 14
+-----------------------------------------------------------
+-- UI STATUS FRAME (GÓC PHẢI)
+-----------------------------------------------------------
+local ScreenGui = Instance.new("ScreenGui", game.CoreGui)
+local StatusLabel = Instance.new("TextLabel", ScreenGui)
+StatusLabel.Size = UDim2.new(0, 220, 0, 35)
+StatusLabel.Position = UDim2.new(1, -230, 0, 20)
+StatusLabel.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+StatusLabel.BackgroundTransparency = 0.4
+StatusLabel.TextColor3 = Color3.fromRGB(255, 0, 0)
+StatusLabel.Text = "Auto Jump: OFF" 
+StatusLabel.Font = Enum.Font.SourceSansBold
+StatusLabel.TextSize = 20
+StatusLabel.Visible = false
+local UICorner = Instance.new("UICorner", StatusLabel)
+UICorner.CornerRadius = UDim.new(0, 8)
+
+local function UpdateStatusUI(state)
+    StatusLabel.Visible = true 
+    if state then
+        StatusLabel.Text = "Auto Jump: ON"; StatusLabel.TextColor3 = Color3.fromRGB(0, 255, 0)
+    else
+        StatusLabel.Text = "Auto Jump: OFF"; StatusLabel.TextColor3 = Color3.fromRGB(255, 0, 0)
+    end
 end
 
---- TAB 1: ABOUT
+-----------------------------------------------------------
+-- TABS
+-----------------------------------------------------------
+
 local Tab1 = Window:CreateTab("About")
-Tab1:CreateParagraph({Title = "About", Content = "cre with ken.cute24"})
+Tab1:CreateParagraph({Title = "Developer", Content = "Script made by kencute24\nPowered by Gemini AI"})
 
---- TAB 2: UPDATE LOG
 local Tab2 = Window:CreateTab("Update Log")
-Tab2:CreateParagraph({Title = "Log", Content = "0.01 notworking"})
-Tab2:CreateParagraph({Title = "Log", Content = "0.02 notworking"})
-Tab2:CreateParagraph({Title = "Log", Content = "0.03 notworking"})
-Tab2:CreateParagraph({Title = "Log", Content = "0.04 testing"})
-
---- TAB 3: MAIN
-local Tab3 = Window:CreateTab("Main")
-Tab3:CreateSlider({Name = "Touch Sensitivity", Range = {0, 100}, Increment = 1, CurrentValue = 50, Callback = function(v) end})
-Tab3:CreateButton({Name = "Reset to Default", Callback = function() 
-    Config.Speed = 16
-    Config.JumpCap = 50
-    workspace.CurrentCamera.FieldOfView = 70
-end})
-
-Tab3:CreateToggle({Name = "ESP Player", CurrentValue = false, Callback = function(v) Config.ESP_Player = v end})
-Tab3:CreateToggle({Name = "ESP Nextbot", CurrentValue = false, Callback = function(v) Config.ESP_Nextbot = v end})
-Tab3:CreateToggle({Name = "ESP Ticket", CurrentValue = false, Callback = function(v) end})
-Tab3:CreateToggle({Name = "Automatic Respawn", CurrentValue = false, Callback = function(v) Config.AutoRespawn = v end})
-
-Tab3:CreateDropdown({
-   Name = "Choose Respawn Method",
-   Options = {"Random", "Fake Revive"},
-   CurrentOption = {"Random"},
-   Callback = function(v) Config.RespawnMethod = v[1] end,
+Tab2:CreateParagraph({
+    Title = "Version History", 
+    Content = "0.01 notworking\n0.02 notworking\n0.03 notworking\n0.4 notworking\n0.5 testing power by Gemini AI"
 })
 
---- TAB 4: AUTO FARM
+local Tab3 = Window:CreateTab("Main")
+Tab3:CreateLabel("Visual Settings")
+Tab3:CreateToggle({Name = "ESP Player", CurrentValue = false, Callback = function(v) Config.ESP_Player = v end})
+Tab3:CreateToggle({Name = "ESP Nextbot", CurrentValue = false, Callback = function(v) Config.ESP_Nextbot = v end})
+Tab3:CreateToggle({Name = "Full Bright (Light)", CurrentValue = false, Callback = function(v) 
+    if v then game:GetService("Lighting").Brightness = 2; game:GetService("Lighting").ClockTime = 12
+    else game:GetService("Lighting").Brightness = 1 end
+end})
+Tab3:CreateLabel("Game Settings")
+Tab3:CreateToggle({Name = "Automatic Respawn", CurrentValue = false, Callback = function(v) Config.AutoRespawn = v end})
+Tab3:CreateToggle({Name = "No Camera Shake", CurrentValue = false, Callback = function(v) Config.NoCameraShake = v end})
+Tab3:CreateButton({Name = "Open Leaderboard", Callback = function() end})
+
 local Tab4 = Window:CreateTab("Auto Farm")
-Tab4:CreateLabel("Warning! Only Use in Private server")
-Tab4:CreateParagraph({Title = "How it works", Content = "Only enable one toggle at a time..."})
 Tab4:CreateToggle({Name = "Anti AFK", CurrentValue = false, Callback = function(v) Config.AntiAFK = v end})
-Tab4:CreateToggle({Name = "Automatic Farm", CurrentValue = false, Callback = function(v) end})
-Tab4:CreateInput({Name = "Map Name", PlaceholderText = "WorkFacility", Callback = function(v) end})
+Tab4:CreateToggle({Name = "Auto Collect Tickets", CurrentValue = false, Callback = function(v) end})
+Tab4:CreateInput({Name = "Target Map Name", PlaceholderText = "WorkFacility", Callback = function(v) end})
 
---- TAB 5: ACTIONS
 local Tab5 = Window:CreateTab("Actions")
+Tab5:CreateLabel("Movement")
 Tab5:CreateSlider({Name = "Player Speed", Range = {16, 300}, Increment = 1, CurrentValue = 16, Callback = function(v) Config.Speed = v end})
-Tab5:CreateSlider({Name = "Player Jump Cap", Range = {0, 500}, Increment = 1, CurrentValue = 50, Callback = function(v) Config.JumpCap = v end})
-Tab5:CreateSlider({Name = "Player FOV", Range = {70, 120}, Increment = 1, CurrentValue = 70, Callback = function(v) workspace.CurrentCamera.FieldOfView = v end})
+Tab5:CreateSlider({Name = "Jump Power", Range = {0, 500}, Increment = 1, CurrentValue = 50, Callback = function(v) Config.JumpCap = v end})
+Tab5:CreateSlider({Name = "Field of View", Range = {70, 120}, Increment = 1, CurrentValue = 70, Callback = function(v) workspace.CurrentCamera.FieldOfView = v end})
 
-Tab5:CreateToggle({Name = "Bhop", CurrentValue = false, Callback = function(v) Config.Bhop = v end})
+Tab5:CreateLabel("Auto Jump System")
+Tab5:CreateToggle({Name = "Auto Jump", CurrentValue = false, Callback = function(v) Config.AutoJump = v; UpdateStatusUI(v) end})
+Tab5:CreateInput({Name = "Auto Jump Key", PlaceholderText = "Space", Callback = function(v) 
+    local success, key = pcall(function() return Enum.KeyCode[v:upper()] end)
+    if success then Config.JumpKey = key end
+end})
 
-Tab5:CreateToggle({Name = "Infinite Slide", CurrentValue = false, Callback = function(v) Config.InfiniteSlide = v end})
-Tab5:CreateInput({Name = "Slide Speed", PlaceholderText = "-8", Callback = function(v) Config.SlideSpeed = tonumber(v) or -8 end})
+Tab5:CreateLabel("Extra Actions")
+Tab5:CreateToggle({Name = "Bounce", CurrentValue = false, Callback = function(v) Config.Bounce = v end})
+Tab5:CreateToggle({Name = "Auto Carry (F4)", CurrentValue = false, Callback = function(v) Config.AutoCarry = v end})
 
--- [HỆ THỐNG XỬ LÝ CHÍNH]
-RunService.PostSimulation:Connect(function()
+-----------------------------------------------------------
+-- CORE LOGIC
+-----------------------------------------------------------
+RunService.PreRender:Connect(function()
     pcall(function()
         local char = lp.Character
-        if char and char:FindFirstChild("HumanoidRootPart") then
-            local hum = char:FindFirstChildOfClass("Humanoid")
-            
-            -- Fix Speed (Dùng CFrame bù vận tốc)
+        local hrp = char:FindFirstChild("HumanoidRootPart")
+        local hum = char:FindFirstChild("Humanoid")
+        
+        if hrp and hum then
+            -- Speed Bypass
             if Config.Speed > 16 and hum.MoveDirection.Magnitude > 0 then
-                char.HumanoidRootPart.CFrame = char.HumanoidRootPart.CFrame + (hum.MoveDirection * (Config.Speed / 120))
+                local vel = hum.MoveDirection * Config.Speed
+                hrp.Velocity = Vector3.new(vel.X, hrp.Velocity.Y, vel.Z)
             end
-            
-            -- Bhop
-            if Config.Bhop and UserInputService:IsKeyDown(Enum.KeyCode.Space) and hum.FloorMaterial ~= Enum.Material.Air then
-                hum:ChangeState(Enum.HumanoidStateType.Jumping)
+            -- Auto Jump
+            if Config.AutoJump and UIS:IsKeyDown(Config.JumpKey) then
+                if hum.FloorMaterial ~= Enum.Material.Air then
+                    hrp.Velocity = Vector3.new(hrp.Velocity.X, Config.JumpCap, hrp.Velocity.Z)
+                    hum:ChangeState(Enum.HumanoidStateType.Jumping)
+                end
+            end
+            -- Bounce
+            if Config.Bounce and hum.FloorMaterial == Enum.Material.Air and hrp.Velocity.Y < 0 then
+                hrp.Velocity = Vector3.new(hrp.Velocity.X, Config.BounceAmt, hrp.Velocity.Z)
+            end
+            -- No Camera Shake
+            if Config.NoCameraShake then
+                lp.PlayerGui.Scripts.CameraShake.Enabled = false
             end
         end
     end)
 end)
 
--- Vòng lặp quét ESP và Auto Respawn
+-- ESP 
+local function CreateESP(part, name, color)
+    if not part or part:FindFirstChild("KenESP") then return end
+    local bgui = Instance.new("BillboardGui", part); bgui.Name = "KenESP"; bgui.AlwaysOnTop = true; bgui.Size = UDim2.new(0, 200, 0, 50); bgui.ExtentsOffset = Vector3.new(0, 3, 0)
+    local nametag = Instance.new("TextLabel", bgui); nametag.Text = name; nametag.Size = UDim2.new(1, 0, 1, 0); nametag.BackgroundTransparency = 1; nametag.TextColor3 = color; nametag.Font = Enum.Font.SourceSansBold; nametag.TextSize = 14
+end
+
 task.spawn(function()
     while task.wait(0.5) do
-        pcall(function()
-            if Config.ESP_Nextbot then
-                for _, v in pairs(workspace.Game.Nextbots:GetChildren()) do
-                    if v:FindFirstChild("HumanoidRootPart") then
-                        CreateESP(v.HumanoidRootPart, v.Name, Color3.fromRGB(255, 0, 0))
-                    end
-                end
+        if Config.ESP_Nextbot then
+            for _, v in pairs(workspace.Game.Nextbots:GetChildren()) do CreateESP(v:FindFirstChild("HumanoidRootPart"), v.Name, Color3.fromRGB(255, 0, 0)) end
+        end
+        if Config.ESP_Player then
+            for _, v in pairs(game.Players:GetPlayers()) do
+                if v ~= lp and v.Character then CreateESP(v.Character:FindFirstChild("HumanoidRootPart"), v.Name, Color3.fromRGB(0, 255, 0)) end
             end
-            if Config.ESP_Player then
-                for _, v in pairs(game.Players:GetPlayers()) do
-                    if v ~= lp and v.Character and v.Character:FindFirstChild("HumanoidRootPart") then
-                        CreateESP(v.Character.HumanoidRootPart, v.Name, Color3.fromRGB(0, 255, 0))
-                    end
-                end
-            end
-            if Config.AutoRespawn and lp.Character.Humanoid.Health <= 0 then
-                game:GetService("ReplicatedStorage").Events.Respawn:FireServer()
-            end
-        end)
+        end
+        if Config.AutoRespawn and lp.Character and lp.Character:FindFirstChild("Humanoid") and lp.Character.Humanoid.Health <= 0 then
+            game:GetService("ReplicatedStorage").Events.Respawn:FireServer()
+        end
     end
 end)
