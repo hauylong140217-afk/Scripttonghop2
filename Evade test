@@ -12,7 +12,10 @@ local Window = Rayfield:CreateWindow({
       Note = "Contact kencute24 for License Key", 
       FileName = "EvadeKeyConfig",
       SaveKey = true,
-      Key = {"KEN-PREMIUM-V2-888"} 
+      Key = {
+          "TITANTIVIMAN-PREMIUM-121-2341-090909", 
+          "KEN-PREMIUM-V2-888", 
+          "GEMINI-POWER-2026"
    }
 })
 
