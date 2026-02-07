@@ -1,124 +1,121 @@
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
 local Window = Rayfield:CreateWindow({
-   Name = "kencute24 scriptpremium",
+   Name = "Evade | kencute24 Script Premium",
    LoadingTitle = "Evade Script Hub",
    LoadingSubtitle = "by KenCute",
-   ConfigurationSaving = {
-      Enabled = true,
-      FolderName = "EvadeKenCute",
-      FileName = "Config"
-   },
+   ConfigurationSaving = {Enabled = true, FolderName = "EvadeKenCute"},
    KeySystem = true,
    KeySettings = {
       Title = "Key System",
-      Subtitle = "Enter Key to Access",
-      Note = "Join Discord for Key and join in tiktok ken.cute24", -- Bạn có thể sửa nội dung này
+      Subtitle = "Enter Key",
+      Note = "join discord in tiktok ken.cute24", 
       FileName = "EvadeKey",
       SaveKey = true,
-      GrabKeyFromSite = false,
       Key = {"keyrobloxevadekencute24"}
    }
 })
 
---- TAB 1: ABOUT ---
-local Tab1 = Window:CreateTab("About", 4483362458) 
-local Section1 = Tab1:CreateSection("Information")
-local AboutParagraph = Tab1:CreateParagraph({Title = "About", Content = "cre with kencute24 thank you for use"}) -- Tự sửa note ở đây
+-- Biến lưu giá trị logic
+local _G = {
+    Speed = 16,
+    JumpCap = 50,
+    FOV = 70,
+    AntiAFK = false
+}
 
---- TAB 2: UPDATE LOG ---
-local Tab2 = Window:CreateTab("Update Log", 4483362458)
-local LogParagraph = Tab2:CreateParagraph({Title = "Recent Updates", Content = "update log v0.01"}) -- Tự sửa note ở đây
+--- TAB 1 & 2: NOTES ---
+local Tab1 = Window:CreateTab("About")
+Tab1:CreateParagraph({Title = "About", Content = ""}) -- Tự điền note của bạn
+
+local Tab2 = Window:CreateTab("Update Log")
+Tab2:CreateParagraph({Title = "Log", Content = "0.01 notworking"}) -- Tự điền note của bạn
+Tab2:CreateParagraph({Title = "Log", Content = "0.02"}) -- Tự điền note của bạn
 
 --- TAB 3: MAIN ---
-local Tab3 = Window:CreateTab("Main", 4483362458)
+local Tab3 = Window:CreateTab("Main")
 
-Tab3:CreateSlider({
-   Name = "Touch Sensitivity",
-   Range = {0, 100},
-   Increment = 1,
-   Suffix = "%",
-   CurrentValue = 50,
-   Callback = function(Value) end,
+Tab3:CreateToggle({
+   Name = "ESP Nextbot",
+   CurrentValue = false,
+   Callback = function(Value)
+      -- Logic ESP cơ bản (Ví dụ minh họa)
+      _G.ESPNextbot = Value
+      while _G.ESPNextbot do
+          task.wait(1)
+          for _, v in pairs(workspace.Game.Nextbots:GetChildren()) do
+              if not v:FindFirstChild("Highlight") then
+                  local hi = Instance.new("Highlight", v)
+                  hi.FillColor = Color3.fromRGB(255, 0, 0)
+              end
+          end
+      end
+   end
 })
 
+-- Nút Reset (Đưa mọi thứ về mặc định)
 Tab3:CreateButton({
    Name = "Reset to Default",
-   Callback = function() end,
+   Callback = function()
+       game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 16
+       game.Players.LocalPlayer.Character.Humanoid.JumpPower = 50
+       workspace.CurrentCamera.FieldOfView = 70
+   end,
 })
-
-Tab3:CreateToggle({Name = "ESP Player", CurrentValue = false, Callback = function(Value) end})
-Tab3:CreateToggle({Name = "ESP Ticket", CurrentValue = false, Callback = function(Value) end})
-Tab3:CreateToggle({Name = "ESP Nextbot", CurrentValue = false, Callback = function(Value) end})
-Tab3:CreateToggle({Name = "ESP Downed Player", CurrentValue = false, Callback = function(Value) end})
-Tab3:CreateToggle({Name = "Automatic Respawn", CurrentValue = false, Callback = function(Value) end})
-
-Tab3:CreateDropdown({
-   Name = "Choose Respawn Method",
-   Options = {"Random", "Fake Revive"},
-   CurrentOption = {"Random"},
-   MultipleOptions = false,
-   Callback = function(Option) end,
-})
-
-Tab3:CreateToggle({Name = "Game Timer Display", CurrentValue = false, Callback = function(Value) end})
-Tab3:CreateToggle({Name = "Auto Remove Invisible Wall (Has bugs)", CurrentValue = false, Callback = function(Value) end})
-
-Tab3:CreateButton({Name = "Open Leaderboard", Callback = function() end})
-Tab3:CreateButton({Name = "Remove Battle Pass Timer", Callback = function() end})
-Tab3:CreateButton({Name = "Open Exchange", Callback = function() end})
 
 --- TAB 4: AUTO FARM ---
-local Tab4 = Window:CreateTab("Auto Farm", 4483362458)
-
+local Tab4 = Window:CreateTab("Auto Farm")
 Tab4:CreateLabel("Warning! Only Use in Private server")
-Tab4:CreateParagraph({Title = "How it works", Content = "Only enable one toggle at a time based on your preference. Turning on a toggle will keep you respawning until the selected map is active. For example, the automatic farm will keep you respawning until the 'WorkFacility' map is loaded."})
+Tab4:CreateParagraph({Title = "How it works", Content = "Only enable one toggle at a time..."})
 
-Tab4:CreateToggle({Name = "Anti AFK", CurrentValue = false, Callback = function(Value) end})
-Tab4:CreateToggle({Name = "Automatic Farm", CurrentValue = false, Callback = function(Value) end})
-
-Tab4:CreateInput({
-   Name = "Map Name (Round)",
-   PlaceholderText = "e.g. WorkFacility",
-   RemoveTextAfterFocusLost = false,
-   Callback = function(Text) end,
+Tab4:CreateToggle({
+   Name = "Anti AFK",
+   CurrentValue = false,
+   Callback = function(Value)
+      _G.AntiAFK = Value
+      if _G.AntiAFK then
+          local VirtualUser = game:GetService("VirtualUser")
+          game.Players.LocalPlayer.Idled:Connect(function()
+              if _G.AntiAFK then
+                  VirtualUser:CaptureController()
+                  VirtualUser:ClickButton2(Vector2.new())
+              end
+          end)
+      end
+   end
 })
-
-Tab4:CreateInput({
-   Name = "Special Round",
-   PlaceholderText = "e.g. plushie hell",
-   RemoveTextAfterFocusLost = false,
-   Callback = function(Text) end,
-})
-
-Tab4:CreateToggle({Name = "Custom Farm", CurrentValue = false, Callback = function(Value) end})
-Tab4:CreateToggle({Name = "Farm Candy", CurrentValue = false, Callback = function(Value) end})
 
 --- TAB 5: ACTIONS ---
-local Tab5 = Window:CreateTab("Actions", 4483362458)
+local Tab5 = Window:CreateTab("Actions")
 
-Tab5:CreateSlider({Name = "Player Speed", Range = {16, 300}, Increment = 1, CurrentValue = 16, Callback = function(Value) end})
-Tab5:CreateSlider({Name = "Player Jump Cap", Range = {0, 500}, Increment = 1, CurrentValue = 50, Callback = function(Value) end})
-Tab5:CreateSlider({Name = "Player Jump Multiplier", Range = {1, 10}, Increment = 0.1, CurrentValue = 1, Callback = function(Value) end})
-Tab5:CreateSlider({Name = "Player FOV", Range = {70, 120}, Increment = 1, CurrentValue = 70, Callback = function(Value) end})
+Tab5:CreateSlider({
+   Name = "Player Speed",
+   Range = {16, 300},
+   Increment = 1,
+   CurrentValue = 16,
+   Callback = function(Value)
+      _G.Speed = Value
+      game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = Value
+   end,
+})
 
-Tab5:CreateToggle({Name = "Bounce", CurrentValue = false, Callback = function(Value) end})
-Tab5:CreateToggle({Name = "Super Bounce", CurrentValue = false, Callback = function(Value) end})
+Tab5:CreateSlider({
+   Name = "Player FOV",
+   Range = {70, 120},
+   Increment = 1,
+   CurrentValue = 70,
+   Callback = function(Value)
+      workspace.CurrentCamera.FieldOfView = Value
+   end,
+})
 
-Tab5:CreateInput({Name = "Bounce Amount", PlaceholderText = "80", Callback = function(Text) end})
-Tab5:CreateInput({Name = "Super Bounce Amount", PlaceholderText = "120", Callback = function(Text) end})
-
-Tab5:CreateToggle({Name = "Sprint Emote", CurrentValue = false, Callback = function(Value) end})
-Tab5:CreateInput({Name = "Sprint Emote Keybind", PlaceholderText = "e", Callback = function(Text) end})
-Tab5:CreateInput({Name = "Sprint Emote Speed", PlaceholderText = "1000", Callback = function(Text) end})
-
-Tab5:CreateToggle({Name = "Infinite Slide", CurrentValue = false, Callback = function(Value) end})
-Tab5:CreateInput({Name = "Infinite Slide Keybind", PlaceholderText = "Q", Callback = function(Text) end})
-Tab5:CreateInput({Name = "Set Infinite Slide Speed (Negative)", PlaceholderText = "-8", Callback = function(Text) end})
-
-Tab5:CreateToggle({Name = "Auto Carry", CurrentValue = false, Callback = function(Value) end})
-Tab5:CreateInput({Name = "Auto Carry Keybind", PlaceholderText = "F4", Callback = function(Text) end})
-
-Tab5:CreateToggle({Name = "Bhop", CurrentValue = false, Callback = function(Value) end})
-Tab5:CreateLabel("Hold Jump/Space to Bhop")
-Tab5:CreateInput({Name = "Bhop Keybind", PlaceholderText = "B", Callback = function(Text) end})
+-- Loop để giữ Speed không bị game reset khi hồi sinh
+task.spawn(function()
+    while task.wait() do
+        pcall(function()
+            if game.Players.LocalPlayer.Character:FindFirstChild("Humanoid") then
+                game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = _G.Speed
+            end
+        end)
+    end
+end)
